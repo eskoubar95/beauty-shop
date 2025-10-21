@@ -1,0 +1,60 @@
+---
+title: Next.js 15 + React 19 Frontend
+description: Next.js 15 + React 19 — regler og best practices for Beauty Shop frontend (App Router)
+owner: web@beauty-shop
+severity: warn
+globs: "app/**, components/**, lib/**"
+last_review: 2025-10-19
+next_review: 2025-12-01
+---
+
+## Purpose
+- Server-first patterns, data fetching on server, clear client-only boundaries, file/routing structure, metadata/SEO, images/assets, runtime choices.
+
+## Component types
+- Server by default. Use `"use client"` only when interactivity is required. Keep business logic out of client components.
+
+## Data fetching
+- Use Server Actions and server components for fetching/mutations. Centralize SDK calls in `lib/services/*`. Return `{ data, error }`.
+
+### Bad
+```
+"use client";
+import { getData } from "@/lib/services/medusa";
+export default async function Page() {
+  const data = await getData(); // client fetch + await
+  return <List items={data} />;
+}
+```
+
+### Good
+```
+import { getData } from "@/lib/services/medusa";
+export default async function Page() {
+  const data = await getData(); // server fetch
+  return <List items={data} />;
+}
+```
+
+## Caching and revalidation
+- Use cache for public, slow-changing data; revalidate for product-like data; `no-store` for user/checkout data; avoid double-fetch.
+
+### Autofix
+- Move duplicated child fetches up to parent; pass props down.
+- Add `export const revalidate = <seconds>` for ISR where suitable.
+
+## Routing and structure
+- App Router only; organize by features/segments. Keep nesting shallow. Use `next/link` for internal navigation.
+
+## Styling and UI
+- Tailwind + tokens; use `clsx`/`cn()`; build composable primitives and feature components; maintain contrast and focus states.
+
+## Performance
+- Prefer streamed SSR; lazy/split large components with `Suspense`; keep client bundle slim; use React 19 compiler defaults.
+
+## Integrations
+- Supabase server-side; Medusa via `lib/services/medusa.ts`; LaunchDarkly eval server-side; Sentry root error boundary without PII.
+
+## DoD (Definition of Done)
+- No client-only secrets; server actions for mutations; no duplicate fetch; LCP sane; a11y checks pass.
+

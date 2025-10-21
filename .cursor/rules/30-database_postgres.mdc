@@ -1,0 +1,16 @@
+---
+title: Database (Postgres/Supabase)
+description: Schema, RLS, migrations, performance and backup basics
+owner: backend@beauty-shop
+severity: warn
+globs: "supabase/**, packages/db/**, **/*.sql"
+last_review: 2025-10-19
+next_review: 2025-12-01
+---
+
+## Principles
+- RLS on user/analytics schemas; service-role only on server.
+- Migrations versioned; no ad-hoc schema drift.
+- Index hot paths; measure with EXPLAIN ANALYZE.
+- Backups scheduled; restore tested in staging.
+

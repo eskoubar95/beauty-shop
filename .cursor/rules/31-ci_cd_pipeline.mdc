@@ -1,0 +1,17 @@
+---
+title: CI/CD Pipeline
+description: GitHub Actions build/test/deploy, gates og rollback
+owner: platform@beauty-shop
+severity: warn
+globs: ".github/workflows/**"
+last_review: 2025-10-19
+next_review: 2025-12-01
+---
+
+## Flow
+- Install + cache → typecheck + lint → unit tests → build → preview → integration tests.
+
+## Gates
+- `severity: error` rules gate CI (fail build/test).
+- Upload Sentry sourcemaps on release.
+

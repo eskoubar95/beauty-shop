@@ -1,0 +1,23 @@
+---
+title: Feature Flags (LaunchDarkly)
+description: Naming, rollout, governance & SDK usage (Beauty Shop standard)
+owner: platform@beauty-shop
+severity: warn
+globs: "**/*"
+last_review: 2025-10-19
+next_review: 2025-12-01
+---
+
+## Naming
+- `feature_<area>_<name>`; avoid generic names.
+
+## Rollout
+- Start with off-by-default; progressive rollout; define success/rollback.
+
+## SDK usage
+- Evaluate server-side for logic; client only for visual gating.
+
+## DoD
+- Named with `feature_<area>_<name>`; owner/TTL set; default OFF in prod.
+- Server paths tested for ON/OFF; Sentry breadcrumb added; cleanup issue created.
+
