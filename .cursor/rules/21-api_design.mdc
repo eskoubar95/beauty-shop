@@ -1,0 +1,39 @@
+---
+title: API Design
+description: Beauty Shop API design — resource modeling, versioning, errors, pagination
+owner: backend@beauty-shop
+severity: warn
+globs: "**/*"
+last_review: 2025-10-19
+next_review: 2025-12-01
+---
+
+## Principles
+- Resource-first design; stable IDs; explicit versioning (`/v1`).
+- Consistent errors: `{ code, message, details? }`; never leak internals.
+- Pagination: cursor-based by default; `limit` caps; stable sort.
+- Idempotency for mutations where applicable.
+
+## Good
+```
+GET /v1/products?limit=20&cursor=abc
+200 { items: [...], nextCursor: "def" }
+```
+
+## Bad
+```
+GET /products?offset=1000 // unstable paging under writes
+```
+
+## Error contract
+```
+{
+  "code": "PRODUCT_NOT_FOUND",
+  "message": "Product not found"
+}
+```
+
+## Autofix
+- Replace offset pagination with cursor-based.
+- Normalize error shapes and redact stack traces.
+

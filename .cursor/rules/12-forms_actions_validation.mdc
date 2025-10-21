@@ -1,0 +1,24 @@
+---
+title: Forms, Server Actions & Validation
+description: Next.js 15 + RHF + Zod — ensartede formularer og server actions
+owner: web@beauty-shop
+severity: warn
+globs: "app/**/actions.ts, app/**/page.tsx, components/forms/**, packages/shared-schemas/**"
+last_review: 2025-10-19
+next_review: 2025-12-01
+---
+
+## Purpose
+- Standardize forms using Server Actions, React Hook Form and Zod, with accessible UX and consistent result shapes.
+
+## Rules
+- Zod-first schemas in shared package; infer TS types.
+- Server Actions handle mutations; return `{ ok, data?, error? }`.
+- Client uses RHF + zodResolver; inline errors; aria-live feedback.
+
+## Good result shape
+```
+{ ok: true, data: {...} }
+{ ok: false, error: { code: "VALIDATION", fields: { email: "Invalid" } }}
+```
+

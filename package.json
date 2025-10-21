@@ -3,7 +3,25 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "echo 'No app yet. Add Next.js or your app framework'",
+    "build": "echo 'Nothing to build yet'",
+    "start": "echo 'No runtime yet'",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "secrets:check": "bash -lc 'if git ls-files | grep -E \"^\\.env(\\..*)?$\"; then echo \"Error: .env files must not be committed\" >&2; exit 1; fi'",
+    "env:setup": "node scripts/setup-env.js",
+    "env:validate": "node scripts/validate-env.js",
+    "env:health": "node scripts/health-check.js",
+    "env:check": "npm run env:validate && npm run env:health",
+    "security:audit": "node scripts/security-audit.js",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run secrets:check",
+    "pre-pr": "npm run check && npm run build",
+    "ci": "npm ci --prefer-offline && npm run check"
   },
   "repository": {
     "type": "git",
