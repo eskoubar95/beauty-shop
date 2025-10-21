@@ -1,34 +1,42 @@
-## What
+## 📋 Pull Request
 
-Briefly summarize the change.
+### Linear Issue
+- **Issue:** [CORE-XXX](https://linear.app/beauty-shop/issue/CORE-XXX)
+- **Type:** [Feature | Bug Fix | Chore | Refactor]
+- **Priority:** [Low | Medium | High | Urgent]
 
-## Why
+### 📝 Description
+[Brief description of changes]
 
-Why is this change needed? Link to issue/ADR.
+### 🔗 Related Issues
+- Closes #[issue-number]
+- Related to #[issue-number]
 
-## How
-
-Key implementation notes, risks, and decisions.
-
-## Tests
-
+### 🧪 Testing
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
-- [ ] Manual test plan included
+- [ ] Manual testing completed
+- [ ] All tests pass: `npm run check`
 
-## Screenshots (if UI)
+### 📋 Checklist
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex code
+- [ ] Documentation updated (if needed)
+- [ ] No console.log statements left
+- [ ] No TODO comments left
 
-Add before/after screenshots or recordings.
+### 🚀 Deployment Notes
+[Any special deployment considerations]
 
-## Rollback plan
+### 📸 Screenshots (if UI changes)
+[Add screenshots if applicable]
 
-How to revert safely if needed.
+### 🔍 Review Focus
+[Areas that need special attention during review]
 
-## Checklist
+### ⚠️ Breaking Changes
+[Describe any breaking changes]
 
-- [ ] Follows `.cursor/rules` (foundations, API, security, observability, flags)
-- [ ] No secrets or PII added; env managed via secrets
-- [ ] Lint/typecheck/tests pass locally (`npm run check`)
-- [ ] Scope kept small; docs updated if needed
-
-
+### 📚 Additional Context
+[Any other context about the PR]

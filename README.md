@@ -1,5 +1,110 @@
 # Beauty Shop
 
+Modern hudplejeunivers der kombinerer koreansk innovation med nordisk enkelhed. Curated e-commerce platform for mænd med fokus på kvalitet og enkelhed.
+
+## 🚀 Tech Stack
+
+- **Frontend:** Next.js 15 + TypeScript + Tailwind CSS
+- **Backend:** MedusaJS v2 + PostgreSQL
+- **Database:** Supabase
+- **Authentication:** Clerk
+- **Payments:** Stripe
+- **Hosting:** Vercel (Frontend) + Render (Backend)
+
+## 📋 Prerequisites
+
+- Node.js 20.x
+- npm 10.x
+- Git
+
+## 🛠️ Development Setup
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/eskoubar95/beauty-shop.git
+cd beauty-shop
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Environment Setup
+```bash
+# Setup development environment
+npm run env:setup
+
+# Validate environment
+npm run env:check
+```
+
+### 4. Start Development
+```bash
+# Start development server
+npm run dev
+```
+
+## 📁 Project Structure
+
+```
+beauty-shop/
+├── .github/                 # GitHub Actions & Templates
+├── .project/               # Project documentation
+├── scripts/                # Utility scripts
+├── package.json            # Dependencies & scripts
+└── README.md              # This file
+```
+
+## 🧪 Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run typecheck` - Run TypeScript check
+- `npm run test` - Run tests
+- `npm run env:setup` - Setup environment files
+- `npm run env:validate` - Validate environment
+- `npm run env:health` - Health check services
+- `npm run security:audit` - Security audit
+- `npm run repo:health` - Repository health check
+- `npm run repo:check` - Full repository validation
+
+## 🔒 Security
+
+- Environment variables never committed to git
+- Secrets managed via secure services (Vercel, Render)
+- Regular security audits with `npm run security:audit`
+
+## 📚 Documentation
+
+- [Project Brief](.project/01-Project_Brief.md)
+- [Tech Stack](.project/03-Tech_Stack.md)
+- [API Design](.project/05-API_Design.md)
+- [Security Guidelines](.project/security-guidelines.md)
+
+## 🤝 Contributing
+
+1. Create feature branch: `feature/CORE-{id}-{title}`
+2. Make changes
+3. Run tests: `npm run check`
+4. Create pull request
+5. Wait for review and approval
+
+## 📄 License
+
+ISC License - see [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For questions or issues, please:
+1. Check existing [GitHub Issues](https://github.com/eskoubar95/beauty-shop/issues)
+2. Create new issue with appropriate template
+3. Reference Linear issue if applicable
+
+---
+
 ## Environment Setup
 
 ### Development
