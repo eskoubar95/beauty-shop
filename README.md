@@ -68,6 +68,8 @@ beauty-shop/
 - `npm run env:validate` - Validate environment
 - `npm run env:health` - Health check services
 - `npm run security:audit` - Security audit
+- `npm run repo:health` - Repository health check
+- `npm run repo:check` - Full repository validation
 
 ## 🔒 Security
 
