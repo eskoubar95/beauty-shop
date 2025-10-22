@@ -1,0 +1,36 @@
+{
+  "name": "@beauty-shop/admin",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "payload": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts payload",
+    "payload:generate": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts payload generate:types",
+    "payload:migrate": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts payload migrate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "payload": "^3.60.0",
+    "@payloadcms/db-postgres": "^3.60.0",
+    "@payloadcms/bundler-webpack": "^1.0.9",
+    "@payloadcms/richtext-slate": "^3.60.0",
+    "@payloadcms/next": "^3.60.0",
+    "@beauty-shop/types": "workspace:*",
+    "next": "15.5.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "cross-env": "^7.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.0.0",
+    "tailwindcss": "^3.4.3",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.38"
+  }
+}
