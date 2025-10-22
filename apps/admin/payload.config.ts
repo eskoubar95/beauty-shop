@@ -23,8 +23,8 @@ if (!PAYLOAD_SECRET) {
 export default buildConfig({
   admin: {
     user: 'users',
-    bundler: webpackBundler(),
   },
+  bundler: webpackBundler(),
   editor: slateEditor({}),
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001',
   db: postgresAdapter({

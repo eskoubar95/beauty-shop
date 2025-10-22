@@ -1,6 +1,6 @@
 # Plan-Based Development Workflow
 
-**New in October 2025** - 14 commands inspired by [HumanLayer](https://github.com/humanlayer/humanlayer/tree/main/.claude/commands), adapted for Cursor capabilities.
+**New in October 2025** - 15 commands inspired by [HumanLayer](https://github.com/humanlayer/humanlayer/tree/main/.claude/commands), adapted for Cursor capabilities.
 
 ## Overview
 
@@ -112,6 +112,28 @@ For large features (>400 LOC) or complex changes, use this structured workflow t
 | `/review-pr-self` | Self-review assistant | Current branch | File-by-file review with suggestions |
 | `/add-tests-for-changes` | Generate missing tests | Current branch | Test files with coverage analysis |
 | `/update-docs-from-changes` | Update documentation | Current branch | Doc updates (README, JSDoc, etc.) |
+
+---
+
+### 5. Session Management (1)
+
+| Command | Purpose | Input | Output |
+|---------|---------|-------|--------|
+| `/resume-task` | Resume work across chat sessions | BS-XXX | Complete task context + next steps |
+
+**Use when:**
+- Chat context limit hit (80+ messages)
+- Switching between task phases
+- Picking up work after a break
+- Handing off to another developer
+- Need to reconstruct progress
+
+**Reconstructs from:**
+- Linear issue (status, comments via MCP)
+- Git history (commits, branches, changes)
+- Implementation plan (plan vs. actual progress)
+- GitHub PR status (via MCP)
+- Uncommitted changes (working directory)
 
 ---
 

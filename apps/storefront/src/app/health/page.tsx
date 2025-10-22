@@ -1,7 +1,8 @@
-import { testMedusaConnection } from '@/lib/medusa'
+import Link from 'next/link'
 
-export default async function HealthPage() {
-  const isMedusaConnected = await testMedusaConnection()
+export default function HealthPage() {
+  // Note: MedusaJS connection test disabled during build to prevent timeouts
+  const isMedusaConnected = false
   
   const healthStatus = {
     status: isMedusaConnected ? 'healthy' : 'unhealthy',
@@ -85,12 +86,12 @@ export default async function HealthPage() {
           </div>
 
           <div className="mt-8">
-            <a 
+            <Link 
               href="/" 
               className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
               ← Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>

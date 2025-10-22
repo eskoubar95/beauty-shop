@@ -15,15 +15,23 @@ Dette dokument guider frontend‑udviklingen af Beauty Shop webappen fra opsætn
 
 ## 1) Projektopsætning & Miljø
 
+**⚠️ Important:** Beauty Shop bruger en **monorepo struktur** med Turborepo + pnpm workspaces. Next.js storefront er placeret i `apps/storefront/` sammen med MedusaJS backend (`apps/medusa/`) og Payload CMS (`apps/admin/`).
+
+**Monorepo Benefits:**
+- Shared UI components via `packages/ui/`
+- Shared TypeScript types via `packages/types/`
+- Coordinated development (`pnpm dev` starter alle apps)
+- Type safety på tværs af apps
+
 ### 1.1 Framework og CLI
 - **Framework:** Next.js 15 (App Router) + React 19 + TypeScript
 - **Node:** v20 LTS
+- **Package Manager:** pnpm 8.x (required for monorepo)
 
 ```bash
-# Opret projekt
-npx create-next-app@latest beauty-shop --typescript --tailwind --app
-
-cd beauty-shop
+# Opret projekt (fra monorepo root)
+cd apps/storefront
+pnpm create next-app@latest . --typescript --tailwind --app
 ```
 
 ### 1.2 Pakker og afhængigheder
@@ -36,11 +44,14 @@ cd beauty-shop
 - Dev tooling: `eslint`, `prettier`, `husky`, `lint-staged`
 
 ```bash
-npm install @medusajs/medusa-js @stripe/stripe-js @clerk/nextjs zustand \
+# Install dependencies (from apps/storefront/)
+pnpm install @medusajs/medusa-js @stripe/stripe-js @clerk/nextjs zustand \
   react-hook-form zod @hookform/resolvers lucide-react
 
-npm install -D @sentry/nextjs eslint prettier husky lint-staged \
+pnpm install -D @sentry/nextjs eslint prettier \
   @tailwindcss/forms @tailwindcss/typography
+
+# Note: husky og lint-staged er sat op i monorepo root
 ```
 
 ### 1.3 Tailwind & shadcn/ui

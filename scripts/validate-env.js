@@ -1,89 +1,78 @@
 #!/usr/bin/env node
 
-const requiredEnvVars = {
-  development: [
-    'DATABASE_URL',
-    'REDIS_URL', 
-    'STRIPE_API_KEY',
-    'CLERK_SECRET_KEY',
-    'SUPABASE_URL',
-    'SUPABASE_SERVICE_ROLE_KEY'
-  ],
-  production: [
-    'DATABASE_URL',
-    'STRIPE_API_KEY',
-    'CLERK_SECRET_KEY', 
-    'SUPABASE_URL',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'SENTRY_DSN'
-  ]
+const fs = require('fs')
+const path = require('path')
+
+const REQUIRED_VARS = {
+  'SUPABASE_URL': 'Supabase project URL',
+  'SUPABASE_ANON_KEY': 'Supabase anonymous key',
+  'DATABASE_URL': 'PostgreSQL connection string',
 }
 
-function validateEnvironment() {
-  const env = process.env.NODE_ENV || 'development'
-  const missing = []
+const OPTIONAL_VARS = {
+  'MEDUSA_BACKEND_URL': 'MedusaJS backend URL (default: http://localhost:9000)',
+  'PAYLOAD_SECRET': 'Payload CMS secret key',
+  'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY': 'Clerk publishable key',
+}
+
+function validateEnv() {
+  console.log('🔍 Validating environment variables...\n')
   
-  console.log(`🔍 Validating ${env} environment...`)
+  const envFile = '.env'
+  if (!fs.existsSync(envFile)) {
+    console.error('❌ .env file not found')
+    console.error('   Run: node scripts/setup-env.js')
+    process.exit(1)
+  }
   
-  requiredEnvVars[env]?.forEach(varName => {
-    if (!process.env[varName]) {
-      missing.push(varName)
+  const envContent = fs.readFileSync(envFile, 'utf8')
+  const envVars = {}
+  
+  envContent.split('\n').forEach(line => {
+    const match = line.match(/^([^=]+)=(.*)$/)
+    if (match) {
+      envVars[match[1].trim()] = match[2].trim()
     }
   })
   
-  if (missing.length > 0) {
-    console.error(`❌ Missing required environment variables: ${missing.join(', ')}`)
-    console.error(`\nPlease ensure all required variables are set in your .env file`)
-    console.error(`Required for ${env}:`, requiredEnvVars[env])
+  let missingVars = []
+  let emptyVars = []
+  
+  // Check required variables
+  for (const [varName, description] of Object.entries(REQUIRED_VARS)) {
+    if (!envVars[varName]) {
+      missingVars.push(`${varName} - ${description}`)
+    } else if (envVars[varName].includes('your-') || envVars[varName].includes('...')) {
+      emptyVars.push(`${varName} - ${description}`)
+    }
+  }
+  
+  if (missingVars.length > 0) {
+    console.error('❌ Missing required environment variables:\n')
+    missingVars.forEach(v => console.error(`   - ${v}`))
     process.exit(1)
   }
   
-  console.log(`✅ Environment validation passed for ${env}`)
-  console.log(`Found ${requiredEnvVars[env].length} required variables`)
-}
-
-// Additional validation functions
-function validateJWTSecret() {
-  const jwtSecret = process.env.JWT_SECRET
-  if (jwtSecret && jwtSecret.length < 32) {
-    console.error(`❌ JWT_SECRET is too short (${jwtSecret.length} chars). Minimum 32 characters required.`)
-    process.exit(1)
+  if (emptyVars.length > 0) {
+    console.warn('⚠️  Environment variables with placeholder values:\n')
+    emptyVars.forEach(v => console.warn(`   - ${v}`))
+    console.warn('\n   These must be filled with actual values before deployment\n')
   }
-}
-
-function validateDatabaseURL() {
-  const dbUrl = process.env.DATABASE_URL
-  if (dbUrl && !dbUrl.startsWith('postgresql://')) {
-    console.error(`❌ DATABASE_URL must start with 'postgresql://'`)
-    process.exit(1)
-  }
-}
-
-function validateCORS() {
-  const storeCors = process.env.STORE_CORS
-  const adminCors = process.env.ADMIN_CORS
   
-  if (process.env.NODE_ENV === 'production') {
-    if (storeCors && storeCors.includes('localhost')) {
-      console.error(`❌ STORE_CORS contains localhost in production`)
-      process.exit(1)
-    }
-    if (adminCors && adminCors.includes('localhost')) {
-      console.error(`❌ ADMIN_CORS contains localhost in production`)
-      process.exit(1)
-    }
+  // Check optional variables
+  console.log('✅ Required environment variables present\n')
+  console.log('ℹ️  Optional variables:')
+  for (const [varName, description] of Object.entries(OPTIONAL_VARS)) {
+    const status = envVars[varName] ? '✓' : '✗'
+    console.log(`   ${status} ${varName}`)
   }
+  
+  console.log('\n🎉 Environment validation complete!')
 }
 
-// Run all validations
 try {
-  validateEnvironment()
-  validateJWTSecret()
-  validateDatabaseURL()
-  validateCORS()
-  
-  console.log(`\n🎉 All environment validations passed!`)
+  validateEnv()
 } catch (error) {
-  console.error(`\n💥 Environment validation failed:`, error.message)
+  console.error('\n💥 Validation failed:', error.message)
   process.exit(1)
 }

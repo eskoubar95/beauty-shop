@@ -812,27 +812,43 @@ module.exports = {
 
 ## 8. Implementation Timeline
 
-### **Week 1-2: Project Foundation**
+### **Week 1-2: Project Foundation (Monorepo Setup)**
 
-**Day 1-3: Project Setup**
+**Day 1-3: Monorepo Foundation**
 ```bash
-# Frontend setup
-npx create-next-app@latest beauty-shop --typescript --tailwind --app
-cd beauty-shop
-npm install @medusajs/medusa-js @stripe/stripe-js zustand
-npm install -D @types/node
+# Initialize Turborepo + pnpm workspaces
+pnpm init
+pnpm add -D turbo
 
-# Backend setup
-npx create-medusa-app@latest beauty-shop-backend
-cd beauty-shop-backend
-npm install @medusajs/medusa-plugin-stripe
+# Create monorepo structure
+mkdir -p apps/storefront apps/admin apps/medusa
+mkdir -p packages/ui packages/types packages/config
+
+# Setup Turborepo config
+# Create turbo.json and pnpm-workspace.yaml
 ```
 
-**Day 4-7: Core Integration**
-- Connect Next.js to MedusaJS API
-- Setup Clerk authentication
-- Configure Supabase database
-- Deploy to staging environments
+**Day 4-7: App Installation**
+```bash
+# MedusaJS 2.0 (backend + admin)
+pnpm create medusa-app@latest apps/medusa \
+  --db-url "postgresql://postgres:[PASSWORD]@db.aakjzquwftmtuzxjzxbv.supabase.co:5432/postgres"
+
+# Next.js 15 Storefront
+cd apps/storefront
+pnpm create next-app@latest . --typescript --tailwind --app
+
+# Payload CMS
+cd apps/admin
+pnpm create payload-app@latest .
+```
+
+**Day 8-10: Shared Packages & Integration**
+- Setup shared UI components (`packages/ui/`)
+- Configure shared TypeScript types (`packages/types/`)
+- Setup shared configs (`packages/config/`)
+- Configure Supabase schema separation
+- Test cross-package imports
 
 **Day 8-14: Basic E-commerce Flow**
 - Product catalog implementation

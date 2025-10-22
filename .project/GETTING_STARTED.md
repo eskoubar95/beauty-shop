@@ -32,28 +32,20 @@ These 5 issues must be completed **in order** before any MVP work can begin:
    - **Depends on:** CORE-15 (needs env vars for CI)
    - **Estimated:** ~3-4 hours
 
-3. **CORE-5: Supabase Database Setup**
-   - Create Supabase project (dev + prod)
-   - Implement database schema
-   - Configure RLS policies
-   - **Depends on:** CORE-15 (needs DATABASE_URL)
-   - **Estimated:** ~6-8 hours
+3. **CORE-16: Monorepo Setup with MedusaJS, Next.js, and Payload CMS**
+   - Setup Turborepo + pnpm workspaces
+   - MedusaJS 2.0 installation (backend + admin)
+   - Next.js 15 storefront skeleton
+   - Payload CMS setup
+   - Supabase schema separation
+   - Shared packages (ui, types, config)
+   - **Depends on:** CORE-15 (needs env vars)
+   - **Estimated:** ~12-16 hours
+   - **Note:** Replaces CORE-5, CORE-6, and CORE-7
 
-4. **CORE-6: MedusaJS Backend Setup**
-   - Initialize MedusaJS v2
-   - Stripe + Clerk integrations
-   - Basic API structure
-   - **Depends on:** CORE-15, CORE-5
-   - **Estimated:** ~8-10 hours
+**Total Foundation Phase:** ~17-23 hours (~3-5 days for solo dev)
 
-5. **CORE-7: Next.js Frontend Setup**
-   - Next.js 15 + Tailwind + shadcn/ui
-   - Design tokens
-   - Basic layout structure
-   - **Depends on:** CORE-15, CORE-6
-   - **Estimated:** ~6-8 hours
-
-**Total Foundation Phase:** ~25-33 hours (~1-1.5 weeks for solo dev)
+**Important:** CORE-5 (Supabase Database Setup) was **cancelled** and replaced by CORE-16 due to architecture changes. The new monorepo structure integrates all setup into a single, coordinated implementation.
 
 ---
 
@@ -90,12 +82,16 @@ Start here to understand the project:
 git clone https://github.com/eskoubar95/beauty-shop.git
 cd beauty-shop
 
-# Install dependencies (when package.json exists)
+# Install dependencies (after CORE-16 monorepo setup)
 pnpm install
 
 # Copy environment templates (after CORE-15 is done)
 cp .env.example .env
-cp .env.local.example .env.local
+
+# Copy app-specific environment templates
+cp apps/storefront/.env.local.example apps/storefront/.env.local
+cp apps/medusa/.env.example apps/medusa/.env
+cp apps/admin/.env.example apps/admin/.env
 
 # Fill in your secrets (see .project/secrets-management.md)
 ```
@@ -175,7 +171,7 @@ If this works, your Linear MCP is configured correctly.
 
 ## ⚡ Quick Start: Foundation Phase
 
-### Step 1: Start with CORE-15
+### Step 1: Start with CORE-15 (Environment Configuration)
 
 ```bash
 # In Cursor:
@@ -184,23 +180,37 @@ If this works, your Linear MCP is configured correctly.
 # This will show you the issue details, dependencies, and implementation approach
 ```
 
-### Step 2: Create Implementation Plan
+### Step 1.5: Complete CORE-4 (GitHub Repository Setup)
 
 ```bash
-/create-implementation-plan
+/fetch-linear-ticket CORE-4
 ```
 
-This will guide you through creating a structured plan for CORE-15.
-
-### Step 3: Execute Phase by Phase
+### Step 2: Move to CORE-16 (Monorepo Setup)
 
 ```bash
-/execute-plan-phase
+/fetch-linear-ticket CORE-16
+
+# This is the big one - replaces CORE-5, CORE-6, and CORE-7
+```
+
+### Step 3: Create Implementation Plan
+
+```bash
+/create-implementation-plan CORE-16
+```
+
+This will guide you through creating a structured plan for CORE-16.
+
+### Step 4: Execute Phase by Phase
+
+```bash
+/execute-plan-phase .project/plans/2025-01-21-CORE-16-monorepo-setup.md 1
 ```
 
 This will implement the plan step by step with pause points.
 
-### Step 4: Quality Checks
+### Step 5: Quality Checks
 
 ```bash
 /prepare-pr
@@ -208,10 +218,10 @@ This will implement the plan step by step with pause points.
 
 This runs all checks (lint, typecheck, tests, build).
 
-### Step 5: Create PR
+### Step 6: Create PR
 
 ```bash
-/create-pr-with-linear CORE-15
+/create-pr-with-linear CORE-16
 ```
 
 This creates a GitHub PR with automatic Linear linking.

@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload/types'
+import type { CollectionConfig } from 'payload'
 
 export const BlogPost: CollectionConfig = {
   slug: 'blog-posts',
@@ -24,8 +24,8 @@ export const BlogPost: CollectionConfig = {
     },
     {
       name: 'featuredImage',
-      type: 'upload',
-      relationTo: 'media',
+      type: 'text',
+      label: 'Featured Image URL',
     },
   ],
 }

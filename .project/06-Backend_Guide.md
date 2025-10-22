@@ -30,7 +30,7 @@
 
 **System Requirements:**
 - Node.js 20.x eller nyere
-- npm 10.x eller nyere
+- pnpm 8.x eller nyere (anbefalet for monorepo)
 - PostgreSQL 15.x (håndteres af Supabase)
 - Git 2.40+
 
@@ -38,6 +38,14 @@
 - VS Code med anbefalede extensions
 - Postman eller Insomnia for API testing
 - Docker (valgfrit, for lokale services)
+
+**⚠️ Important:** Beauty Shop bruger en **monorepo struktur** med Turborepo + pnpm workspaces. MedusaJS backend er placeret i `apps/medusa/` sammen med Next.js storefront (`apps/storefront/`) og Payload CMS (`apps/admin/`).
+
+**Monorepo Benefits:**
+- Shared packages (`packages/ui/`, `packages/types/`, `packages/config/`)
+- Coordinated builds med Turborepo
+- Type safety på tværs af apps
+- Consistent tooling og dependencies
 
 ### 1.2 Environment Setup
 

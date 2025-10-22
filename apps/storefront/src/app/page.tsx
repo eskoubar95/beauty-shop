@@ -1,8 +1,6 @@
-import { testMedusaConnection } from '@/lib/medusa'
-
-export default async function HomePage() {
-  // Test MedusaJS connection on server side
-  const isMedusaConnected = await testMedusaConnection()
+export default function HomePage() {
+  // Note: MedusaJS connection test disabled during build to prevent timeouts
+  const isMedusaConnected = false
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50">

@@ -2,14 +2,26 @@
 
 **Phase:** Foundation (Week 1-2)  
 **Goal:** Setup complete development environment and infrastructure  
-**Status:** Ready to start  
-**Created:** October 21, 2025
+**Status:** ⚠️ OUTDATED - See updated plan below  
+**Created:** October 21, 2025  
+**Updated:** January 21, 2025
+
+---
+
+## ⚠️ ARCHITECTURE UPDATE (Jan 21, 2025)
+
+**This plan has been updated to reflect the new monorepo architecture:**
+- CORE-5, CORE-6, and CORE-7 have been **replaced** by **CORE-16** (Monorepo Setup)
+- The new Foundation Phase now consists of **3 tasks** instead of 5
+- Updated plan below reflects Turborepo + pnpm workspaces structure
+
+**See:** [CORE-16 - Monorepo Setup](https://linear.app/beauty-shop/issue/CORE-16)
 
 ---
 
 ## Overview
 
-The Foundation Phase consists of 5 critical tasks that **must** be completed in order before any MVP development can begin. This plan outlines dependencies, estimated timelines, and success criteria for each task.
+The Foundation Phase consists of 3 critical tasks that **must** be completed in order before any MVP development can begin. This plan outlines dependencies, estimated timelines, and success criteria for each task.
 
 ---
 
@@ -20,17 +32,18 @@ CORE-15 (Environment Configuration)
     ↓
     ├── CORE-4 (GitHub Repository Setup)
     ↓
-    └── CORE-5 (Supabase Database Setup)
+    └── CORE-16 (Monorepo Setup: MedusaJS + Next.js + Payload CMS)
             ↓
-            └── CORE-6 (MedusaJS Backend Setup)
-                    ↓
-                    └── CORE-7 (Next.js Frontend Setup)
-                            ↓
-                            MVP Development Ready ✅
+            MVP Development Ready ✅
 ```
 
-**Critical Path:** CORE-15 → CORE-5 → CORE-6 → CORE-7  
-**Parallel Path:** CORE-4 can be done after CORE-15, in parallel with CORE-5
+**Critical Path:** CORE-15 → CORE-16  
+**Parallel Path:** CORE-4 can be done after CORE-15, in parallel with CORE-16
+
+**Old Architecture (DEPRECATED):**
+~~CORE-5 (Supabase Database Setup)~~ → **Cancelled**  
+~~CORE-6 (MedusaJS Backend Setup)~~ → **Merged into CORE-16**  
+~~CORE-7 (Next.js Frontend Setup)~~ → **Merged into CORE-16**
 
 ---
 
@@ -200,71 +213,121 @@ README.md                       # Root README (update)
 
 ---
 
-## Task 3: CORE-5 – Supabase Database Setup
+## Task 3: CORE-16 – Monorepo Setup (MedusaJS + Next.js + Payload CMS)
 
 **Priority:** 🔴 CRITICAL  
-**Estimated Time:** 6-8 hours  
-**Dependencies:** CORE-15 (needs DATABASE_URL)  
-**Blocks:** CORE-6 (backend needs database)
+**Estimated Time:** 12-16 hours  
+**Dependencies:** CORE-15 (needs environment vars)  
+**Blocks:** MVP Development (all apps needed)
+
+**⚠️ Note:** This task **replaces** CORE-5, CORE-6, and CORE-7 with a unified monorepo approach.
 
 ### Why Third?
 
-Backend (CORE-6) cannot function without a database. This is the most complex Foundation task due to schema design and RLS policies.
+All apps (MedusaJS backend, Next.js storefront, Payload CMS) need to be set up in a coordinated monorepo structure to enable shared packages, type safety, and efficient development workflow.
 
 ### Scope
 
-1. **Create Supabase project**
-   - Development project
-   - Production project (or staging)
-   - Enable required extensions (uuid-ossp, pg_trgm)
+**Phase 1: Monorepo Foundation**
+1. **Initialize Turborepo + pnpm workspaces**
+   - Create `turbo.json` config
+   - Create `pnpm-workspace.yaml`
+   - Setup root `package.json`
 
-2. **Implement database schema**
-   - Review `.project/04-Database_Schema.md` thoroughly
-   - Create migration files (001_initial_schema.sql)
-   - MedusaJS compatible schema
-   - Indexes for performance
+2. **Create folder structure**
+   - `apps/storefront/` (Next.js 15)
+   - `apps/medusa/` (MedusaJS 2.0 backend + admin)
+   - `apps/admin/` (Payload CMS)
+   - `packages/ui/` (Shared components)
+   - `packages/types/` (Shared TypeScript types)
+   - `packages/config/` (Shared configs)
 
-3. **Configure RLS policies**
-   - Row Level Security for multi-tenancy
-   - Policies for each table
-   - Test policies thoroughly
+**Phase 2: MedusaJS Setup**
+3. **Install MedusaJS 2.0**
+   - Use `create-medusa-app` with direct Supabase connection
+   - Configure database URL
+   - Test MedusaJS admin dashboard
 
-4. **Add seed data**
-   - Sample products
-   - Sample users (for testing)
-   - Sample orders (for testing)
+**Phase 3: Supabase Schema Separation**
+4. **Configure database schemas**
+   - Create `medusa` schema for MedusaJS tables
+   - Create `beauty_shop` schema for custom tables
+   - Implement RLS policies with Clerk authentication
+   - Migrate MedusaJS tables to `medusa` schema
 
-5. **Test connection**
-   - Connection from local machine
-   - Verify RLS policies work
-   - Test migrations rollback
+**Phase 4: Next.js & Payload Setup**
+5. **Install Next.js 15 storefront**
+   - Setup App Router structure
+   - Configure Tailwind + shadcn/ui
+   - Connect to MedusaJS API
+
+6. **Install Payload CMS**
+   - Configure Payload with Supabase
+   - Setup content collections
+   - Test admin interface
+
+**Phase 5: Shared Packages**
+7. **Setup shared packages**
+   - UI components in `packages/ui/`
+   - TypeScript types in `packages/types/`
+   - Test cross-package imports
 
 ### Files to Create
 
 ```
-backend/
+# Root monorepo config
+turbo.json                      # Turborepo config
+pnpm-workspace.yaml             # pnpm workspaces
+package.json                    # Root package.json
+
+# Apps
+apps/
+  medusa/                       # MedusaJS (created by CLI)
+    package.json
+    medusa-config.js
+    .env
+  storefront/                   # Next.js (created by CLI)
+    package.json
+    next.config.js
+    .env.local
+  admin/                        # Payload CMS (created by CLI)
+    package.json
+    payload.config.ts
+    .env
+
+# Packages
+packages/
+  ui/
+    package.json                # Shared UI components
+    tsconfig.json
+  types/
+    package.json                # Shared TypeScript types
+    index.ts
+  config/
+    package.json                # Shared configs (eslint, tsconfig)
+    tsconfig.base.json
+
+# Database
+supabase/
   migrations/
-    001_initial_schema.sql      # Main schema
-    002_rls_policies.sql        # RLS policies
-    003_seed_data.sql           # Sample data
-  lib/
-    supabase/
-      client.ts                 # Supabase client
-      types.ts                  # Generated types
-      migrate.ts                # Migration runner
+    001_medusa_schema.sql       # MedusaJS schema separation
+    002_beauty_shop_schema.sql  # Custom tables
+    003_rls_policies.sql        # RLS with Clerk
 ```
 
 ### Success Criteria
 
-- ✅ Supabase project created
-- ✅ Schema implemented correctly
-- ✅ RLS policies active and tested
-- ✅ Seed data inserted
-- ✅ Connection works from backend
+- ✅ Turborepo + pnpm workspaces configured
+- ✅ All 3 apps installed and running
+- ✅ Supabase schema separation implemented
+- ✅ RLS policies with Clerk working
+- ✅ Shared packages working across apps
+- ✅ `pnpm dev` starts all apps simultaneously
+- ✅ Type safety across packages verified
 
 ### Estimated LOC
 
-~400+ LOC
+~600-800 LOC
 
 ### Labels
 
@@ -273,14 +336,21 @@ backend/
 ### Implementation Approach
 
 ```bash
-/fetch-linear-ticket CORE-5
+/fetch-linear-ticket CORE-16
 /create-implementation-plan
 /execute-plan-phase
 ```
 
-**Critical:** Follow `.cursor/rules/30-database_postgres.md` for best practices.
+**Critical:** Follow `.project/08-Architecture.md` for monorepo structure and `.cursor/rules/30-database_postgres.md` for database best practices.
 
 ---
+
+## ~~Task 4: CORE-6 – MedusaJS Backend Setup~~ (DEPRECATED)
+
+**⚠️ This task has been merged into CORE-16 (Monorepo Setup)**
+
+<details>
+<summary>📜 Old CORE-6 Scope (For Reference Only)</summary>
 
 ## Task 4: CORE-6 – MedusaJS Backend Setup
 
@@ -377,7 +447,16 @@ backend/
 
 **Critical:** Follow `.cursor/rules/21-api_design.md` and `.project/06-Backend_Guide.md`.
 
+</details>
+
 ---
+
+## ~~Task 5: CORE-7 – Next.js Frontend Setup~~ (DEPRECATED)
+
+**⚠️ This task has been merged into CORE-16 (Monorepo Setup)**
+
+<details>
+<summary>📜 Old CORE-7 Scope (For Reference Only)</summary>
 
 ## Task 5: CORE-7 – Next.js Frontend Setup
 
@@ -473,41 +552,45 @@ frontend/
 
 **Critical:** Follow `.cursor/rules/10-nextjs_frontend.md` and `.project/07-Frontend_Guide.md`.
 
+</details>
+
 ---
 
-## Timeline & Milestones
+## Timeline & Milestones (Updated for Monorepo)
 
 ### Week 1
 
 **Days 1-2:** CORE-15 + CORE-4 (parallel after CORE-15)
 - Day 1 Morning: CORE-15 (env configuration)
 - Day 1 Afternoon: Start CORE-4 (GitHub setup)
-- Day 2: Finish CORE-4, start CORE-5
+- Day 2: Finish CORE-4
 
-**Days 3-4:** CORE-5 (database setup)
-- Day 3: Schema design + migrations
-- Day 4: RLS policies + seed data
+**Days 3-6:** CORE-16 Phase 1-3 (Monorepo Foundation + MedusaJS + Supabase)
+- Day 3: Turborepo + pnpm workspaces setup
+- Day 4: MedusaJS installation with Supabase
+- Day 5: Database schema separation + RLS policies
+- Day 6: Test MedusaJS backend + admin dashboard
 
 ### Week 2
 
-**Days 5-7:** CORE-6 (backend setup)
-- Day 5: MedusaJS initialization
-- Day 6: Stripe + Clerk integrations
-- Day 7: Sentry + API structure
+**Days 7-9:** CORE-16 Phase 4-5 (Next.js + Payload + Shared Packages)
+- Day 7: Next.js storefront setup + Tailwind
+- Day 8: Payload CMS setup
+- Day 9: Shared packages (ui, types, config)
 
-**Days 8-9:** CORE-7 (frontend setup)
-- Day 8: Next.js + Tailwind + shadcn/ui
-- Day 9: Design tokens + layout + API test
-
-**Day 10:** Buffer & Validation
-- Run full integration test
-- Validate all 5 tasks complete
+**Day 10:** Integration & Validation
+- Test `pnpm dev` (all apps running)
+- Verify type safety across packages
+- Test API connectivity
 - Document any issues
 
 ### Total Timeline
 
-**Estimated:** 10 days (2 weeks for solo dev)  
+**Estimated:** 7-8 days (~1.5 weeks for solo dev)  
 **Buffer:** +2 days for unexpected issues  
+**Total:** 10 days max
+
+**Note:** New monorepo approach is **~2-3 days faster** than the old separate setup approach!  
 **Target Completion:** End of Week 2
 
 ---
@@ -516,23 +599,28 @@ frontend/
 
 ### High-Risk Areas
 
-1. **CORE-5 (Database Schema)**
-   - Risk: RLS policies incorrect → security breach
+1. **CORE-16 (Monorepo Complexity)**
+   - Risk: Apps don't communicate correctly, type mismatches, build failures
+   - Mitigation: Follow Turborepo best practices, test cross-package imports incrementally
+
+2. **Database Schema Separation**
+   - Risk: RLS policies incorrect → security breach, schema conflicts
    - Mitigation: Thorough testing, peer review, follow `.cursor/rules/30-database_postgres.md`
 
-2. **CORE-6 (Backend Integrations)**
-   - Risk: Stripe webhook failures, Clerk auth issues
-   - Mitigation: Test webhooks locally with Stripe CLI, test auth with different user types
+3. **MedusaJS + Supabase Integration**
+   - Risk: Database connection failures, schema conflicts with MedusaJS tables
+   - Mitigation: Use direct connection URL, test schema separation thoroughly
 
-3. **Environment Variables**
-   - Risk: Secrets leaked in git
+4. **Environment Variables**
+   - Risk: Secrets leaked in git, env vars misconfigured across apps
    - Mitigation: Pre-commit hooks, regular secrets audit, follow `.cursor/rules/22-security_secrets.md`
 
 ### Contingency Plans
 
-- If CORE-5 takes longer: Simplify schema, add advanced features later
-- If CORE-6 integrations fail: Start with basic MedusaJS, add plugins incrementally
-- If CORE-7 design tokens missing: Use shadcn defaults, refine later
+- If CORE-16 monorepo setup too complex: Start with separate repos, migrate later
+- If MedusaJS + Supabase integration fails: Use PostgreSQL in Docker as fallback
+- If Payload CMS setup blocked: Skip for now, focus on MedusaJS + Next.js first
+- If shared packages cause issues: Duplicate code initially, refactor later
 
 ---
 
@@ -550,12 +638,19 @@ Each task must pass these checks before moving to next:
 
 ### Before Declaring Foundation Complete
 
-- [ ] All 5 tasks in "Done" status
-- [ ] Backend runs locally without errors
-- [ ] Frontend runs locally without errors
+- [ ] All 3 tasks in "Done" status (CORE-15, CORE-4, CORE-16)
+- [ ] `pnpm dev` starts all apps successfully
+- [ ] MedusaJS backend runs without errors
+- [ ] MedusaJS admin accessible at `/app`
+- [ ] Next.js storefront runs without errors
+- [ ] Payload CMS admin accessible
 - [ ] Database connected and queryable
+- [ ] Schema separation verified (medusa, beauty_shop schemas)
+- [ ] RLS policies working with Clerk
+- [ ] Shared packages importing correctly
+- [ ] Type safety verified across apps
 - [ ] CI/CD pipeline green
-- [ ] All env vars working
+- [ ] All env vars working across apps
 - [ ] No console errors or warnings
 - [ ] Security review passed
 
@@ -563,13 +658,18 @@ Each task must pass these checks before moving to next:
 
 ## After Foundation Phase
 
-Once all 5 tasks are complete:
+Once all 3 tasks are complete (CORE-15, CORE-4, CORE-16):
 
-1. **Celebrate! 🎉** You've built the entire foundation for Beauty Shop.
+1. **Celebrate! 🎉** You've built the entire monorepo foundation for Beauty Shop.
 
 2. **Validate Setup:**
-   - Run full integration test (backend → database → frontend)
-   - Verify all services communicate
+   - Run `pnpm dev` and verify all 3 apps start
+   - Test MedusaJS backend API endpoints
+   - Test MedusaJS admin dashboard access
+   - Test Next.js storefront rendering
+   - Test Payload CMS admin interface
+   - Verify database schemas (medusa, beauty_shop)
+   - Test shared package imports
    - Check CI/CD pipeline is green
 
 3. **Re-create MVP Issues:**
@@ -587,6 +687,7 @@ Once all 5 tasks are complete:
    - Keep test coverage > 70%
    - Keep Lighthouse score > 90
    - Monitor Sentry for errors
+   - Verify type safety across monorepo
 
 ---
 
@@ -600,9 +701,12 @@ Once all 5 tasks are complete:
 **Linear Issues:**
 - [CORE-15: Environment Configuration](https://linear.app/beauty-shop/issue/CORE-15)
 - [CORE-4: GitHub Repository Setup](https://linear.app/beauty-shop/issue/CORE-4)
-- [CORE-5: Supabase Database Setup](https://linear.app/beauty-shop/issue/CORE-5)
-- [CORE-6: MedusaJS Backend Setup](https://linear.app/beauty-shop/issue/CORE-6)
-- [CORE-7: Next.js Frontend Setup](https://linear.app/beauty-shop/issue/CORE-7)
+- [CORE-16: Monorepo Setup with MedusaJS, Next.js, and Payload CMS](https://linear.app/beauty-shop/issue/CORE-16)
+
+**Deprecated Issues (For Reference):**
+- ~~[CORE-5: Supabase Database Setup](https://linear.app/beauty-shop/issue/CORE-5)~~ → Cancelled
+- ~~[CORE-6: MedusaJS Backend Setup](https://linear.app/beauty-shop/issue/CORE-6)~~ → Merged into CORE-16
+- ~~[CORE-7: Next.js Frontend Setup](https://linear.app/beauty-shop/issue/CORE-7)~~ → Merged into CORE-16
 
 **Tech Guides:**
 - [.project/06-Backend_Guide.md](../06-Backend_Guide.md) – Backend guide
