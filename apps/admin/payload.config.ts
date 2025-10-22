@@ -1,5 +1,4 @@
 import { buildConfig } from 'payload'
-import { webpackBundler } from '@payloadcms/bundler-webpack'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { slateEditor } from '@payloadcms/richtext-slate'
 import path from 'path'
@@ -21,10 +20,10 @@ if (!PAYLOAD_SECRET) {
 }
 
 export default buildConfig({
+  secret: PAYLOAD_SECRET,
   admin: {
     user: 'users',
   },
-  bundler: webpackBundler(),
   editor: slateEditor({}),
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001',
   db: postgresAdapter({

@@ -15,7 +15,6 @@
   "dependencies": {
     "payload": "^3.60.0",
     "@payloadcms/db-postgres": "^3.60.0",
-    "@payloadcms/bundler-webpack": "^1.0.9",
     "@payloadcms/richtext-slate": "^3.60.0",
     "@payloadcms/next": "^3.60.0",
     "@beauty-shop/types": "workspace:*",
