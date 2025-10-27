@@ -49,10 +49,10 @@ jobs:
         run: npm ci --prefer-offline
       
       - name: Install backend dependencies
-        run: cd beauty-shop && yarn install --frozen-lockfile
+        run: cd beauty-shop && yarn install --immutable
       
       - name: Install storefront dependencies
-        run: cd beauty-shop-storefront && yarn install --frozen-lockfile
+        run: cd beauty-shop-storefront && yarn install --immutable
       
       - name: Run type check
         run: npm run typecheck
@@ -108,10 +108,10 @@ jobs:
             ${{ runner.os }}-yarn-
       
       - name: Install backend dependencies
-        run: cd beauty-shop && yarn install --frozen-lockfile
+        run: cd beauty-shop && yarn install --immutable
       
       - name: Install storefront dependencies
-        run: cd beauty-shop-storefront && yarn install --frozen-lockfile
+        run: cd beauty-shop-storefront && yarn install --immutable
       
       - name: Run yarn audit (Backend)
         run: cd beauty-shop && yarn audit || true
@@ -148,7 +148,7 @@ jobs:
             ${{ runner.os }}-yarn-storefront-
       
       - name: Install storefront dependencies
-        run: cd beauty-shop-storefront && yarn install --frozen-lockfile
+        run: cd beauty-shop-storefront && yarn install --immutable
       
       - name: Build storefront
         run: cd beauty-shop-storefront && yarn build
