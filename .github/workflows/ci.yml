@@ -23,16 +23,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: 'yarn'
       
       - name: Install root dependencies
         run: npm ci --prefer-offline
       
       - name: Install backend dependencies
-        run: npm ci --prefix beauty-shop
+        run: cd beauty-shop && yarn install --frozen-lockfile
       
       - name: Install storefront dependencies
-        run: npm ci --prefix beauty-shop-storefront
+        run: cd beauty-shop-storefront && yarn install --frozen-lockfile
       
       - name: Run type check
         run: npm run typecheck
@@ -73,20 +73,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'npm'
+          cache: 'yarn'
       
       - name: Install backend dependencies
-        run: npm ci --prefix beauty-shop
+        run: cd beauty-shop && yarn install --frozen-lockfile
       
       - name: Install storefront dependencies
-        run: npm ci --prefix beauty-shop-storefront
+        run: cd beauty-shop-storefront && yarn install --frozen-lockfile
       
-      - name: Run npm audit (Backend)
-        run: npm audit --audit-level=moderate --prefix beauty-shop
+      - name: Run yarn audit (Backend)
+        run: cd beauty-shop && yarn audit || true
         continue-on-error: true
       
-      - name: Run npm audit (Storefront)
-        run: npm audit --audit-level=moderate --prefix beauty-shop-storefront
+      - name: Run yarn audit (Storefront)
+        run: cd beauty-shop-storefront && yarn audit || true
         continue-on-error: true
 
   deploy-storefront:
@@ -103,13 +103,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'npm'
+          cache: 'yarn'
       
       - name: Install storefront dependencies
-        run: npm ci --prefix beauty-shop-storefront
+        run: cd beauty-shop-storefront && yarn install --frozen-lockfile
       
       - name: Build storefront
-        run: npm run build --prefix beauty-shop-storefront
+        run: cd beauty-shop-storefront && yarn build
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
