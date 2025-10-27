@@ -6,46 +6,33 @@
 
 ## 📊 Current Status
 
-**Phase:** Foundation Phase (Week 1-2)  
-**Current Sprint:** Setup infrastructure and development environment  
-**Next Milestone:** Complete all 5 Foundation issues → Start MVP Development
+**Phase:** Foundation Phase (Completed ✅)  
+**Current Sprint:** MVP Development  
+**Architecture:** Simple MedusaJS + Next.js structure (CORE-19)
 
 ---
 
-## 🎯 Foundation Phase (MUST DO FIRST)
+## 🎯 Foundation Phase (COMPLETED)
 
-These 5 issues must be completed **in order** before any MVP work can begin:
+✅ **CORE-19: Fix Fundamental Architecture** (Completed January 24, 2025)
+   - Fresh MedusaJS installation via `create-medusa-app`
+   - Next.js 15 storefront (integrated)
+   - Supabase database configuration
+   - Custom schema migrations
+   - **Result:** Fully functional setup in ~4 hours
+   - **Replaced:** Failed CORE-16 Turborepo monorepo
 
-### Priority Order
+**Key Learnings:**
+- ❌ CORE-16 (Turborepo monorepo) failed after 8+ hours
+- ✅ CORE-19 (Simple MedusaJS setup) succeeded in 4 hours
+- **Lesson:** Follow official documentation, don't fight the framework
 
-1. **CORE-15: Environment Configuration** ⚡ START HERE
-   - Setup all env vars for dev + production
-   - Create .env.example templates
-   - Document secrets management
-   - **Why first:** All other tasks depend on env vars
-   - **Estimated:** ~2-3 hours
+**Architecture Decision:**
+The project now uses a simple two-directory structure:
+- `beauty-shop/` - MedusaJS backend + admin
+- `beauty-shop-storefront/` - Next.js storefront
 
-2. **CORE-4: GitHub Repository Setup**
-   - GitHub Actions CI/CD pipeline
-   - Branch protection rules
-   - Issue templates
-   - **Depends on:** CORE-15 (needs env vars for CI)
-   - **Estimated:** ~3-4 hours
-
-3. **CORE-16: Monorepo Setup with MedusaJS, Next.js, and Payload CMS**
-   - Setup Turborepo + pnpm workspaces
-   - MedusaJS 2.0 installation (backend + admin)
-   - Next.js 15 storefront skeleton
-   - Payload CMS setup
-   - Supabase schema separation
-   - Shared packages (ui, types, config)
-   - **Depends on:** CORE-15 (needs env vars)
-   - **Estimated:** ~12-16 hours
-   - **Note:** Replaces CORE-5, CORE-6, and CORE-7
-
-**Total Foundation Phase:** ~17-23 hours (~3-5 days for solo dev)
-
-**Important:** CORE-5 (Supabase Database Setup) was **cancelled** and replaced by CORE-16 due to architecture changes. The new monorepo structure integrates all setup into a single, coordinated implementation.
+No Turborepo, no shared packages, no unnecessary complexity.
 
 ---
 
@@ -72,7 +59,7 @@ Start here to understand the project:
 
 **Prerequisites:**
 - Node.js 20+
-- pnpm (recommended) or npm
+- npm 10+ (or pnpm 8+)
 - GitHub CLI (optional, but recommended)
 - Cursor IDE (with Linear + GitHub MCP configured)
 
@@ -82,16 +69,29 @@ Start here to understand the project:
 git clone https://github.com/eskoubar95/beauty-shop.git
 cd beauty-shop
 
-# Install dependencies (after CORE-16 monorepo setup)
-pnpm install
-
-# Copy environment templates (after CORE-15 is done)
+# Backend setup
+cd beauty-shop
 cp .env.example .env
+# Edit .env with your Supabase credentials
+npm install
 
-# Copy app-specific environment templates
-cp apps/storefront/.env.local.example apps/storefront/.env.local
-cp apps/medusa/.env.example apps/medusa/.env
-cp apps/admin/.env.example apps/admin/.env
+# Storefront setup
+cd ../beauty-shop-storefront
+cp .env.local.example .env.local
+# Edit .env.local with your MedusaJS backend URL
+npm install
+
+# Run migrations
+cd ../beauty-shop
+npx medusa db:migrate
+
+# Create admin user
+npx medusa user -e admin@medusajs.com -p supersecret
+
+# Configure Medusa Admin
+# 1. Create Region (Settings → Regions)
+# 2. Create Sales Channel (Settings → Sales Channels)
+# 3. Link Publishable API Key to Sales Channel
 
 # Fill in your secrets (see .project/secrets-management.md)
 ```
@@ -169,62 +169,52 @@ If this works, your Linear MCP is configured correctly.
 
 ---
 
-## ⚡ Quick Start: Foundation Phase
+## ⚡ Quick Start: Development
 
-### Step 1: Start with CORE-15 (Environment Configuration)
+### Step 1: Start Backend
 
 ```bash
-# In Cursor:
-/fetch-linear-ticket CORE-15
-
-# This will show you the issue details, dependencies, and implementation approach
+cd beauty-shop
+npm run dev
 ```
 
-### Step 1.5: Complete CORE-4 (GitHub Repository Setup)
+Backend available at: `http://localhost:9000`  
+Admin available at: `http://localhost:9000/app`
+
+### Step 2: Start Storefront
 
 ```bash
-/fetch-linear-ticket CORE-4
+# In a separate terminal
+cd beauty-shop-storefront
+npm run dev
 ```
 
-### Step 2: Move to CORE-16 (Monorepo Setup)
+Storefront available at: `http://localhost:8000`
+
+### Step 3: Start Working on Features
 
 ```bash
-/fetch-linear-ticket CORE-16
+# Fetch your Linear ticket
+/fetch-linear-ticket CORE-XX
 
-# This is the big one - replaces CORE-5, CORE-6, and CORE-7
-```
+# Create implementation plan (if complex)
+/create-implementation-plan CORE-XX
 
-### Step 3: Create Implementation Plan
+# Execute phase by phase
+/execute-plan-phase .project/plans/[plan-file].md 0
 
-```bash
-/create-implementation-plan CORE-16
-```
-
-This will guide you through creating a structured plan for CORE-16.
-
-### Step 4: Execute Phase by Phase
-
-```bash
-/execute-plan-phase .project/plans/2025-01-21-CORE-16-monorepo-setup.md 1
-```
-
-This will implement the plan step by step with pause points.
-
-### Step 5: Quality Checks
-
-```bash
+# Run quality checks before PR
 /prepare-pr
+
+# Create PR
+/create-pr-with-linear CORE-XX
 ```
 
-This runs all checks (lint, typecheck, tests, build).
+### Architecture Reference
 
-### Step 6: Create PR
-
-```bash
-/create-pr-with-linear CORE-16
-```
-
-This creates a GitHub PR with automatic Linear linking.
+See the complete setup guide in the root `README.md` or refer to:
+- `08-Architecture.md` - Complete architecture documentation
+- `.project/lessons-learned.md` - CORE-19 post-mortem and learnings
 
 ---
 
@@ -482,6 +472,7 @@ Once all 5 Foundation issues are done:
 
 **Ready to start?** Run: `/fetch-linear-ticket CORE-15` 🚀
 
-*Last updated: October 21, 2025*  
-*Maintained by: Nicklas Eskou*
+*Last updated: January 24, 2025*  
+*Maintained by: Nicklas Eskou*  
+*Architecture: Simple MedusaJS + Next.js (CORE-19)*
 

@@ -1,98 +1,69 @@
 # 🏗️ Architecture Documentation
 **Beauty Shop – E-commerce Platform for Men's Skincare**
 
-**Version:** 2.0  
-**Dato:** 21. oktober 2025  
+**Version:** 3.0  
+**Dato:** 24. januar 2025  
 **Status:** Active  
 **Dokument ejer:** Nicklas Eskou  
-**Architecture Decision:** Monorepo with Turborepo
+**Architecture Decision:** Simple MedusaJS + Next.js Structure
+
+**Note:** This replaces the failed Turborepo monorepo approach (CORE-16) with the correct MedusaJS-recommended architecture (CORE-19).
 
 ---
 
 ## Executive Summary
 
-Beauty Shop er bygget som en **moderne monorepo** der organiserer 3 separate apps (MedusaJS e-commerce backend, Next.js customer storefront, Payload CMS content management) med delte packages for UI komponenter, TypeScript types og konfigurationsfiler.
+Beauty Shop er bygget med **MedusaJS** e-commerce backend og **Next.js 15** storefront i en simpel, separeret arkitektur. Ingen kompleks monorepo - kun to directories med klar separation af concerns.
 
 **Vigtige arkitektur beslutninger:**
-- **Monorepo manager:** Turborepo + pnpm workspaces
+- **Structure:** Two separate directories (backend + storefront)
 - **Database:** Supabase PostgreSQL med schema separation
-- **Authentication:** Clerk (string-based user IDs, ikke UUID)
-- **E-commerce:** MedusaJS 2.0 (backend + admin i samme app)
-- **Content Management:** Payload CMS (separat admin interface)
+- **Authentication:** Clerk (planned - string-based user IDs)
+- **E-commerce:** MedusaJS 2.0 (backend + integrated admin)
+- **Storefront:** Next.js 15 (App Router)
 
 ---
 
-## 1. Monorepo Structure
+## 1. Project Structure
 
 ```
-beauty-shop/                    # Root monorepo
-├── apps/
-│   ├── storefront/            # Next.js 15 frontend (customer-facing)
-│   │   ├── app/               # Next.js App Router
-│   │   ├── components/
-│   │   ├── lib/
-│   │   ├── styles/
-│   │   ├── package.json
-│   │   └── next.config.js
-│   │
-│   ├── admin/                 # Payload CMS (content management)
-│   │   ├── collections/
-│   │   ├── payload.config.ts
-│   │   ├── package.json
-│   │   └── server.ts
-│   │
-│   └── medusa/                # MedusaJS 2.0 (e-commerce backend + admin)
-│       ├── src/
-│       │   ├── api/
-│       │   ├── models/
-│       │   ├── services/
-│       │   └── subscribers/
-│       ├── medusa-config.js
-│       └── package.json
+beauty-shop-root/
+├── beauty-shop/                    # MedusaJS backend + admin
+│   ├── src/
+│   │   ├── admin/                 # MedusaJS admin customizations
+│   │   ├── api/                   # Custom API routes
+│   │   ├── modules/               # Custom modules
+│   │   ├── workflows/             # Custom workflows
+│   │   └── subscribers/           # Event handlers
+│   ├── medusa-config.ts           # Medusa configuration
+│   ├── .env                       # Backend environment
+│   ├── package.json
+│   └── node_modules/
 │
-├── packages/
-│   ├── ui/                    # Shared React components
-│   │   ├── src/
-│   │   │   ├── button.tsx
-│   │   │   ├── input.tsx
-│   │   │   └── index.ts
-│   │   └── package.json
-│   │
-│   ├── types/                 # Shared TypeScript types
-│   │   ├── src/
-│   │   │   ├── product.ts
-│   │   │   ├── user.ts
-│   │   │   └── index.ts
-│   │   └── package.json
-│   │
-│   └── config/                # Shared configs
-│       ├── eslint/
-│       │   └── next.js
-│       ├── typescript/
-│       │   └── base.json
-│       └── tailwind/
-│           └── base.js
+├── beauty-shop-storefront/         # Next.js storefront
+│   ├── src/
+│   │   ├── app/                   # Next.js 15 App Router
+│   │   ├── components/            # React components
+│   │   ├── lib/                   # Utilities
+│   │   └── middleware.ts          # Next.js middleware
+│   ├── .env.local                 # Storefront environment
+│   ├── package.json
+│   └── node_modules/
 │
-├── supabase/                  # Supabase migrations & config
+├── supabase/                       # Custom migrations
 │   ├── config.toml
 │   └── migrations/
-│       ├── 001_schema_separation.sql
-│       └── 002_rls_policies.sql
+│       ├── 20250124000001_beauty_shop_tables.sql
+│       └── 20250124000002_clerk_rls_policies.sql
 │
-├── scripts/                   # Shared utility scripts
-│   ├── apply-database-setup.js
-│   ├── test-db-connection.js
-│   └── seed-sample-data.js
+├── scripts/                        # Utility scripts
+│   ├── validate-env.js
+│   ├── health-check.js
+│   └── run-migration-direct.js
 │
-├── .github/
-│   └── workflows/
-│       ├── ci.yml            # Lint, test, build
-│       └── deploy.yml        # Deployment pipeline
-│
-├── turbo.json                 # Turborepo pipeline config
-├── pnpm-workspace.yaml        # pnpm workspace definitions
-├── package.json               # Root package.json
-├── .env.example               # Environment template
+├── .project/                       # Project documentation
+├── .backup/                        # Backup of failed monorepo
+├── package.json                    # Root package.json (utility scripts)
 └── README.md
 ```
 
@@ -100,117 +71,83 @@ beauty-shop/                    # Root monorepo
 
 ## 2. Application Architecture
 
-### 2.1 MedusaJS Backend + Admin (`apps/medusa/`)
+### 2.1 MedusaJS Backend + Admin (`beauty-shop/`)
 
 **Purpose:** E-commerce engine med både API backend og admin dashboard.
 
 **Key Features:**
 - **Backend API:** REST API på port `9000`
-- **Admin Dashboard:** Built-in UI på port `9000/app`
-- **Database:** Direkte Supabase connection
-- **Authentication:** Clerk integration for customer auth
+- **Admin Dashboard:** Built-in UI på `http://localhost:9000/app`
+- **Database:** Supabase PostgreSQL (Transaction Pooler)
+- **Authentication:** MedusaJS built-in + Clerk (planned)
 
-**Port:** `http://localhost:9000` (backend + admin)
+**Port:** `http://localhost:9000`
 
-**Database Schema:** `medusa` schema (MedusaJS tables) + `beauty_shop` schema (custom tables)
+**Database Schema:** `public` schema (MedusaJS tables) + `beauty_shop` schema (custom tables)
 
-```javascript
-// apps/medusa/medusa-config.js
-module.exports = {
+```typescript
+// beauty-shop/medusa-config.ts
+import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+
+loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+
+module.exports = defineConfig({
   projectConfig: {
-    database_url: process.env.DATABASE_URL,
-    database_type: "postgres",
-    store_cors: process.env.STORE_CORS,
-    admin_cors: process.env.ADMIN_CORS,
-    jwt_secret: process.env.JWT_SECRET,
-    cookie_secret: process.env.COOKIE_SECRET,
-  },
-  plugins: [
-    {
-      resolve: `@medusajs/medusa-plugin-stripe`,
-      options: {
-        api_key: process.env.STRIPE_API_KEY,
-        webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
-      },
-    },
-  ],
-}
+    databaseUrl: process.env.DATABASE_URL,
+    databaseExtra: process.env.DATABASE_EXTRA 
+      ? JSON.parse(process.env.DATABASE_EXTRA) 
+      : undefined,
+    http: {
+      storeCors: process.env.STORE_CORS!,
+      adminCors: process.env.ADMIN_CORS!,
+      authCors: process.env.AUTH_CORS!,
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+    }
+  }
+})
 ```
+
+**Admin User:**
+- Email: `admin@medusajs.com`
+- Password: `supersecret` (change in production!)
 
 ---
 
-### 2.2 Next.js Storefront (`apps/storefront/`)
+### 2.2 Next.js Storefront (`beauty-shop-storefront/`)
 
 **Purpose:** Customer-facing webshop med App Router.
 
 **Key Features:**
 - **App Router:** Server Components + Server Actions
-- **Authentication:** Clerk integration
-- **API Client:** MedusaJS client for e-commerce
-- **Styling:** Tailwind CSS + shadcn/ui
+- **API Client:** MedusaJS SDK for e-commerce
+- **Styling:** Tailwind CSS
+- **Authentication:** Clerk (planned)
 
-**Port:** `http://localhost:3000`
+**Port:** `http://localhost:8000`
 
 **Key Routes:**
 - `/` - Landing page
-- `/product/[handle]` - Produktdetalje
-- `/cart` - Kurv
-- `/checkout` - Checkout flow
-- `/account/orders` - Ordre oversigt
+- `/[countryCode]/store` - Product catalog
+- `/[countryCode]/products/[handle]` - Product detail
+- `/[countryCode]/cart` - Shopping cart
+- `/[countryCode]/checkout` - Checkout flow
+- `/[countryCode]/account` - Customer account
 
 ```typescript
-// apps/storefront/lib/medusa-client.ts
-import Medusa from "@medusajs/medusa-js"
+// beauty-shop-storefront/src/lib/config.ts
+import Medusa from "@medusajs/js-sdk"
 
-export const medusaClient = new Medusa({
-  baseUrl: process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000",
-  maxRetries: 3,
-})
-```
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
 
----
+if (process.env.MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.MEDUSA_BACKEND_URL
+}
 
-### 2.3 Payload CMS (`apps/admin/`)
-
-**Purpose:** Content management for blog posts, landing pages, og produktindhold.
-
-**Key Features:**
-- **Admin UI:** Built-in admin panel
-- **Database:** Supabase PostgreSQL (`payload` schema)
-- **Collections:** Blog posts, landing pages, media
-- **Authentication:** Separate admin users (ikke Clerk)
-
-**Port:** `http://localhost:3001`
-
-**Database Schema:** `payload` schema (Payload CMS tables)
-
-```typescript
-// apps/admin/payload.config.ts
-import { buildConfig } from 'payload/config'
-import { postgresAdapter } from '@payloadcms/db-postgres'
-
-export default buildConfig({
-  admin: {
-    user: 'users',
-  },
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URL,
-      options: {
-        schema: 'payload',
-      },
-    },
-  }),
-  collections: [
-    {
-      name: 'blog-posts',
-      fields: [
-        { name: 'title', type: 'text', required: true },
-        { name: 'content', type: 'richText', required: true },
-        { name: 'featuredImage', type: 'upload', relationTo: 'media' },
-      ],
-    },
-  ],
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
 })
 ```
 
@@ -221,21 +158,17 @@ export default buildConfig({
 ### 3.1 Schema Separation Strategy
 
 **Rationale:** 
-- MedusaJS, Payload CMS og Beauty Shop custom tables skal adskilles for at undgå navnekonflikter
-- Bedre organisation og vedligeholdelse
-- Nemmere migrations og rollback
+- MedusaJS tables i `public` schema (auto-created)
+- Beauty Shop custom tables i `beauty_shop` schema
+- Payload CMS tables i `payload` schema (planned)
 
 **Schemas:**
 ```sql
--- Schema overview
-CREATE SCHEMA IF NOT EXISTS medusa;       -- MedusaJS predefined tables
-CREATE SCHEMA IF NOT EXISTS beauty_shop;  -- Beauty Shop custom tables
-CREATE SCHEMA IF NOT EXISTS payload;      -- Payload CMS tables
+-- MedusaJS creates its own tables in public schema automatically
+-- We only create custom schemas
 
--- Set search_path for each app
--- MedusaJS: search_path = medusa, public
--- Payload: search_path = payload, public
--- Custom: search_path = beauty_shop, public
+CREATE SCHEMA IF NOT EXISTS beauty_shop;  -- Beauty Shop custom tables
+CREATE SCHEMA IF NOT EXISTS payload;      -- Payload CMS (planned)
 ```
 
 ---
@@ -245,562 +178,370 @@ CREATE SCHEMA IF NOT EXISTS payload;      -- Payload CMS tables
 **Purpose:** Extend MedusaJS with Beauty Shop specific features.
 
 ```sql
--- Custom Beauty Shop table
+-- Custom Beauty Shop tables
 CREATE TABLE beauty_shop.user_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  clerk_user_id TEXT NOT NULL UNIQUE,           -- Clerk string ID (not UUID!)
-  customer_id UUID REFERENCES medusa.customer(id),
+  clerk_user_id TEXT NOT NULL UNIQUE,           -- Clerk string ID
+  customer_id UUID,                              -- Reference to public.customer
   phone VARCHAR(20),
-  date_of_birth DATE,
-  gender VARCHAR(20),
   skin_type VARCHAR(50),
   preferences JSONB DEFAULT '{}',
-  marketing_consent BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE beauty_shop.subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_profile_id UUID REFERENCES beauty_shop.user_profiles(id) ON DELETE CASCADE,
+  subscription_type VARCHAR(50) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'active',
+  start_date TIMESTAMPTZ DEFAULT NOW(),
+  end_date TIMESTAMPTZ,
+  auto_renew BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE beauty_shop.content_blocks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title VARCHAR(255) NOT NULL,
+  content TEXT,
+  block_type VARCHAR(50) NOT NULL,
+  position INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Indexes
-CREATE INDEX idx_user_profiles_clerk_user_id ON beauty_shop.user_profiles(clerk_user_id);
+CREATE INDEX idx_user_profiles_clerk_id ON beauty_shop.user_profiles(clerk_user_id);
 CREATE INDEX idx_user_profiles_customer_id ON beauty_shop.user_profiles(customer_id);
-CREATE INDEX idx_user_profiles_skin_type ON beauty_shop.user_profiles(skin_type);
+CREATE INDEX idx_subscriptions_user_profile_id ON beauty_shop.subscriptions(user_profile_id);
 ```
 
 ---
 
 ### 3.3 RLS Policies (Row Level Security)
 
-**Authentication Method:** Clerk JWT tokens (string-based user IDs)
-
-**Critical Note:** Clerk uses `TEXT` user IDs (e.g., `user_2abc123def456ghi789`), **not UUID**!
+**Authentication Method:** Clerk JWT tokens (planned)
 
 ```sql
--- Enable RLS on custom Beauty Shop tables
+-- Enable RLS
 ALTER TABLE beauty_shop.user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE beauty_shop.subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE beauty_shop.content_blocks ENABLE ROW LEVEL SECURITY;
 
--- RLS policies using Clerk JWT
+-- User profiles policies
 CREATE POLICY "Users can view own profile" ON beauty_shop.user_profiles
   FOR SELECT USING (auth.jwt() ->> 'sub' = clerk_user_id);
 
 CREATE POLICY "Users can update own profile" ON beauty_shop.user_profiles
   FOR UPDATE USING (auth.jwt() ->> 'sub' = clerk_user_id);
 
-CREATE POLICY "Users can insert own profile" ON beauty_shop.user_profiles
-  FOR INSERT WITH CHECK (auth.jwt() ->> 'sub' = clerk_user_id);
-
--- Service role bypass (for backend operations)
-CREATE POLICY "Service role full access" ON beauty_shop.user_profiles
-  FOR ALL USING (auth.role() = 'service_role');
-```
-
-**Important:** Use `auth.jwt() ->> 'sub'` (NOT `auth.uid()`) for Clerk integration!
-
----
-
-## 4. Shared Packages
-
-### 4.1 `packages/ui/`
-
-**Purpose:** Shared React components med consistent styling.
-
-**Exports:**
-```typescript
-// packages/ui/src/button.tsx
-export const Button = ({ variant, children, ...props }) => {
-  return <button className={`btn btn-${variant}`} {...props}>{children}</button>
-}
-
-// Usage in apps
-import { Button } from '@beauty-shop/ui'
+-- Content blocks policies (public read)
+CREATE POLICY "Anyone can view active content blocks" ON beauty_shop.content_blocks
+  FOR SELECT USING (is_active = true);
 ```
 
 ---
 
-### 4.2 `packages/types/`
+## 4. Development Workflow
 
-**Purpose:** Shared TypeScript types mellem apps.
-
-**Exports:**
-```typescript
-// packages/types/src/product.ts
-export interface Product {
-  id: string
-  title: string
-  handle: string
-  description: string
-  images: ProductImage[]
-  variants: ProductVariant[]
-}
-
-// Usage in apps
-import type { Product } from '@beauty-shop/types'
-```
-
----
-
-### 4.3 `packages/config/`
-
-**Purpose:** Shared ESLint, TypeScript og Tailwind configs.
-
-**Exports:**
-```javascript
-// packages/config/eslint/next.js
-module.exports = {
-  extends: ['next', 'prettier'],
-  rules: {
-    '@next/next/no-html-link-for-pages': 'off',
-  },
-}
-
-// Usage in apps/storefront/package.json
-{
-  "eslintConfig": {
-    "extends": ["@beauty-shop/eslint-config/next"]
-  }
-}
-```
-
----
-
-## 5. Development Workflow
-
-### 5.1 Local Development
+### 4.1 Local Development
 
 ```bash
-# Install dependencies
-pnpm install
+# Start backend
+cd beauty-shop
+npm run dev
 
-# Start all apps parallelt
-pnpm dev
+# Start storefront (in separate terminal)
+cd beauty-shop-storefront
+npm run dev
 
-# Start specific app
-pnpm dev --filter=@beauty-shop/storefront
-
-# Build all
-pnpm build
-
-# Run tests
-pnpm test
+# Or use root scripts
+npm run dev:backend
+npm run dev:storefront
+npm run dev:all  # Starts both (requires concurrently)
 ```
 
 ---
 
-### 5.2 Turborepo Pipeline
+### 4.2 Database Migrations
 
-```json
-// turbo.json
-{
-  "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "outputs": []
-    },
-    "test": {
-      "dependsOn": ["build"],
-      "outputs": []
-    }
-  }
-}
+```bash
+# Run MedusaJS migrations (creates public schema tables)
+cd beauty-shop
+npx medusa db:migrate
+
+# Run custom Beauty Shop migrations
+# (via Supabase Dashboard SQL Editor or direct script)
+node scripts/run-migration-direct.js
 ```
 
 ---
 
-### 5.3 pnpm Workspaces
+## 5. Environment Variables
 
-```yaml
-# pnpm-workspace.yaml
-packages:
-  - 'apps/*'
-  - 'packages/*'
-```
-
-```json
-// Root package.json
-{
-  "name": "beauty-shop",
-  "private": true,
-  "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "type-check": "turbo run type-check"
-  },
-  "devDependencies": {
-    "turbo": "^2.0.0",
-    "@beauty-shop/eslint-config": "workspace:*",
-    "@beauty-shop/typescript-config": "workspace:*"
-  }
-}
-```
-
----
-
-## 6. Environment Variables
-
-### 6.1 Global Environment Variables
+### 5.1 Backend Environment (`beauty-shop/.env`)
 
 ```env
-# Supabase Configuration
-SUPABASE_URL=https://aakjzquwftmtuzxjzxbv.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-DATABASE_URL=postgresql://postgres:6swY4T5vVR4KpxdM@db.aakjzquwftmtuzxjzxbv.supabase.co:5432/postgres
+# Supabase Database Configuration (Transaction Pooler)
+DATABASE_URL=postgresql://postgres.xxx:***@aws-1-eu-west-1.pooler.supabase.com:6543/postgres
+DATABASE_EXTRA={"ssl":{"rejectUnauthorized":false}}
 
-# Clerk Configuration
-CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+# MedusaJS Configuration
+MEDUSA_ADMIN_ONBOARDING_TYPE=nextjs
+STORE_CORS=http://localhost:8000,https://docs.medusajs.com
+ADMIN_CORS=http://localhost:5173,http://localhost:9000,https://docs.medusajs.com
+AUTH_CORS=http://localhost:5173,http://localhost:9000,http://localhost:8000,https://docs.medusajs.com
 
-# Stripe Configuration
-STRIPE_API_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-```
-
----
-
-### 6.2 App-Specific Variables
-
-**MedusaJS (`apps/medusa/.env`):**
-```env
-DATABASE_URL=postgresql://postgres:6swY4T5vVR4KpxdM@db.aakjzquwftmtuzxjzxbv.supabase.co:5432/postgres
+# Secrets
 JWT_SECRET=supersecret
 COOKIE_SECRET=supersecret
-MEDUSA_ADMIN_ONBOARDING_TYPE=default
-```
-
-**Next.js Storefront (`apps/storefront/.env.local`):**
-```env
-NEXT_PUBLIC_MEDUSA_URL=http://localhost:9000
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-NEXT_PUBLIC_SENTRY_DSN=https://...
-```
-
-**Payload CMS (`apps/admin/.env`):**
-```env
-DATABASE_URL=postgresql://postgres:6swY4T5vVR4KpxdM@db.aakjzquwftmtuzxjzxbv.supabase.co:5432/postgres
-PAYLOAD_SECRET=your-secret-key
-PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3001
 ```
 
 ---
 
-## 7. Deployment Architecture
+### 5.2 Storefront Environment (`beauty-shop-storefront/.env.local`)
 
-### 7.1 Production Deployment
+```env
+# MedusaJS Backend URL
+MEDUSA_BACKEND_URL=http://localhost:9000
+
+# Publishable API Key (from Medusa Admin)
+NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
+
+# Store Configuration
+NEXT_PUBLIC_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_DEFAULT_REGION=us
+```
+
+---
+
+## 6. Deployment Architecture
+
+### 6.1 Production Deployment
 
 **MedusaJS Backend:**
-- **Host:** Render
+- **Host:** Render or Railway (planned)
 - **Port:** 9000
-- **URL:** `https://api.beautyshop.com`
+- **URL:** `https://api.beautyshop.com` (planned)
 - **Admin:** `https://api.beautyshop.com/app`
 
 **Next.js Storefront:**
-- **Host:** Vercel
-- **URL:** `https://beautyshop.com`
-
-**Payload CMS:**
-- **Host:** Render
-- **Port:** 3001
-- **URL:** `https://admin.beautyshop.com`
+- **Host:** Vercel (planned)
+- **URL:** `https://beautyshop.com` (planned)
 
 **Supabase Database:**
 - **Host:** Supabase (managed)
 - **Region:** eu-west-1
-- **URL:** `https://aakjzquwftmtuzxjzxbv.supabase.co`
+- **Connection:** Transaction Pooler for production
 
 ---
 
-### 7.2 CI/CD Pipeline
+## 7. Architecture Decisions
 
-```yaml
-# .github/workflows/ci.yml
-name: CI Pipeline
+### 7.1 Why Not Turborepo Monorepo?
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+**CORE-16 Failed Approach:**
+- ❌ Turborepo + pnpm workspaces
+- ❌ Shared packages (ui, types, config)
+- ❌ Complex build pipeline
+- ❌ Manual MedusaJS setup
+- ❌ Never worked correctly
 
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install
-      - run: pnpm lint
+**CORE-19 Correct Approach:**
+- ✅ Official `create-medusa-app` CLI
+- ✅ Two simple directories
+- ✅ No unnecessary abstraction
+- ✅ Follows MedusaJS documentation
+- ✅ Working in 4 hours vs 8 hours failed
 
-  type-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install
-      - run: pnpm type-check
+**Key Lesson:** Follow the framework, don't fight it.
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install
-      - run: pnpm test
+---
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install
-      - run: pnpm build
+### 7.2 Why Supabase Transaction Pooler?
+
+**Benefits:**
+- Better connection management
+- Handles concurrent connections
+- Production-ready
+- Supabase recommendation
+
+**Configuration:**
+```env
+# Session Pooler (port 5432) - for long-running connections
+# Transaction Pooler (port 6543) - for short-lived connections (recommended)
+DATABASE_URL=postgresql://postgres.xxx:***@aws-1-eu-west-1.pooler.supabase.com:6543/postgres
 ```
 
 ---
 
-## 8. Migration from Old Architecture
+## 8. Security Architecture
 
-**Old Architecture (CORE-5):**
-- ❌ Separate `backend/` folder med ukoordineret structure
-- ❌ Ingen monorepo manager
-- ❌ MedusaJS admin antaget som separat app
-- ❌ Ingen shared packages
-
-**New Architecture (CORE-16):**
-- ✅ Monorepo med Turborepo + pnpm workspaces
-- ✅ 3 separate apps (`storefront`, `admin`, `medusa`)
-- ✅ Shared packages (`ui`, `types`, `config`)
-- ✅ Schema separation i database
-- ✅ Korrekt Clerk RLS integration
-
-**Migration Steps:**
-1. Delete old `backend/` folder structure
-2. Create new monorepo structure per CORE-16
-3. Migrate environment variables to new structure
-4. Apply database schema separation migrations
-5. Update documentation
-
----
-
-## 9. Security Architecture
-
-### 9.1 Authentication Flow
+### 8.1 Authentication Flow (Planned)
 
 **Customer Authentication (Clerk):**
-```mermaid
-sequenceDiagram
-    participant User
-    participant Storefront
-    participant Clerk
-    participant MedusaJS
-    participant Supabase
+- Clerk handles authentication
+- JWT tokens for API requests
+- RLS policies in Supabase
+- MedusaJS custom auth module
 
-    User->>Storefront: Login
-    Storefront->>Clerk: Authenticate
-    Clerk->>Storefront: JWT Token
-    Storefront->>MedusaJS: API Request + JWT
-    MedusaJS->>Clerk: Verify JWT
-    Clerk->>MedusaJS: User Claims
-    MedusaJS->>Supabase: Query with RLS
-    Supabase->>MedusaJS: Data
-    MedusaJS->>Storefront: Response
-```
+**Admin Authentication:**
+- MedusaJS built-in admin auth
+- Separate from customer auth
+- Admin user created via CLI
 
 ---
 
-### 9.2 API Security
+### 8.2 API Security
 
-**Backend API (MedusaJS):**
-- **Authentication:** Clerk JWT validation
-- **Authorization:** Role-based access control
-- **Rate Limiting:** 100 requests/15 min per IP
-- **CORS:** Whitelist only storefront domain
-- **Input Validation:** Zod schemas
+**MedusaJS Backend:**
+- CORS configuration for storefront
+- JWT secrets for session management
+- Environment-based configuration
 
 **Supabase Database:**
-- **RLS:** Row Level Security enabled
-- **Service Role:** Only backend can bypass RLS
-- **Anon Key:** Only for public read operations
+- RLS enabled on custom tables
+- Service role for backend operations
+- Anon key for public reads (planned)
 
 ---
 
-## 10. Performance Optimization
+## 9. Performance Optimization
 
-### 10.1 Database Optimization
+### 9.1 Database Optimization
 
 ```sql
 -- Indexes for common queries
-CREATE INDEX CONCURRENTLY idx_products_handle ON medusa.products(handle);
-CREATE INDEX CONCURRENTLY idx_user_profiles_clerk_id ON beauty_shop.user_profiles(clerk_user_id);
-CREATE INDEX CONCURRENTLY idx_orders_customer_created ON medusa.orders(customer_id, created_at DESC);
-
--- Enable query stats
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+CREATE INDEX idx_user_profiles_clerk_id ON beauty_shop.user_profiles(clerk_user_id);
+CREATE INDEX idx_subscriptions_status ON beauty_shop.subscriptions(status);
+CREATE INDEX idx_content_blocks_active ON beauty_shop.content_blocks(is_active);
 ```
 
 ---
 
-### 10.2 Caching Strategy
+### 9.2 Caching Strategy
 
 **Next.js Storefront:**
-- **ISR:** Revalidate product pages every 60 seconds
-- **Static Generation:** Landing page, category pages
-- **Client-Side:** Cart state in Zustand
+- ISR (Incremental Static Regeneration) for product pages
+- Static generation for landing pages
+- Turbopack for fast development builds
 
 **MedusaJS Backend:**
-- **Redis:** Session storage, rate limiting
-- **HTTP Caching:** Cache-Control headers on public endpoints
+- Redis (optional - not required for development)
+- HTTP caching headers
 
 ---
 
-## 11. Monitoring & Observability
+## 10. Monitoring & Observability
 
-### 11.1 Error Tracking
+### 10.1 Error Tracking (Planned)
 
 **Sentry Integration:**
-```typescript
-// Sentry configuration for all apps
-import * as Sentry from '@sentry/nextjs'
+- Frontend error tracking
+- Backend error tracking
+- Performance monitoring
 
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  environment: process.env.NODE_ENV,
-  tracesSampleRate: 1.0,
-})
+---
+
+### 10.2 Health Checks
+
+```bash
+# Backend health check
+curl http://localhost:9000/health
+
+# Run health check script
+npm run health-check
 ```
 
 ---
 
-### 11.2 Logging Strategy
+## 11. Migration from Old Architecture
 
-**Structured Logging:**
-```javascript
-// Centralized logger
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
-})
-```
+**From CORE-16 (Failed Monorepo):**
+1. Full backup created in `.backup/2025-01-24-failed-monorepo/`
+2. Deleted `apps/`, `packages/`, `turbo.json`, `pnpm-workspace.yaml`
+3. Fresh install with `create-medusa-app`
+4. Reintegrated custom migrations
+5. Updated all documentation
+
+**Timeline:**
+- CORE-16 (Failed): ~8 hours, never working
+- CORE-19 (Success): ~4 hours, fully functional
 
 ---
 
-## 12. Best Practices
+## 12. Future Considerations
 
-### 12.1 Code Organization
+### 12.1 Planned Features
 
-- **Small files:** < 500 LOC per file
-- **Single responsibility:** One clear purpose per file/component
-- **Naming conventions:** Kebab-case for files, PascalCase for components
-- **Import order:** External → Internal → Relative
+**Authentication:**
+- Clerk integration for customer auth
+- Custom MedusaJS auth module
 
----
+**Content Management:**
+- Payload CMS integration (as MedusaJS module)
+- Blog posts and landing pages
 
-### 12.2 Git Workflow
+**Payments:**
+- Stripe integration
+- Multiple payment methods
 
-**Branch Strategy:**
-- `main` - Production
-- `develop` - Integration
-- `feature/CORE-XXX-description` - Features
-- `hotfix/CORE-XXX-description` - Critical fixes
-
-**PR Requirements:**
-- ✅ Lint passes
-- ✅ Type check passes
-- ✅ Tests pass
-- ✅ Build succeeds
-- ✅ ≥1 reviewer approval
+**Analytics:**
+- Product analytics
+- Customer behavior tracking
 
 ---
 
-## 13. Future Architecture Considerations
-
-### 13.1 Scaling Considerations
+### 12.2 Scaling Considerations
 
 **Database:**
-- Consider read replicas for high traffic
-- Implement connection pooling (PgBouncer)
-- Monitor query performance
+- Connection pooling (already using Transaction Pooler)
+- Read replicas (if needed)
+- Query optimization
 
 **Backend:**
-- Consider microservices for heavy operations
-- Implement message queue (Redis/Bull)
-- Add CDN for static assets
+- Horizontal scaling on Render
+- Redis for caching (if needed)
+- CDN for static assets
 
 **Frontend:**
-- Implement edge caching (Vercel Edge)
-- Consider ISR for all product pages
-- Add service worker for offline support
+- Edge caching on Vercel
+- Image optimization
+- Service worker for offline support
 
 ---
 
-### 13.2 Post-MVP Features
+## 13. Related Documentation
 
-**Architecture Changes:**
-- WebSockets for real-time inventory updates
-- Subscription management system
-- Review & rating moderation workflow
-- Advanced analytics dashboard
+- `README.md` - Setup guide
+- `01-Project_Brief.md` - Project overview
+- `02-Product_Requirements_Document.md` - Full PRD
+- `03-Tech_Stack.md` - Technology choices
+- `04-Database_Schema.md` - Database design
+- `05-API_Design.md` - API endpoints
+- `06-Backend_Guide.md` - Backend development
+- `07-Frontend_Guide.md` - Frontend development
+- `lessons-learned.md` - CORE-19 post-mortem
 
 ---
 
 ## 14. Conclusion
 
-Denne arkitektur dokumentation dækker alle aspekter af Beauty Shop's moderne monorepo setup. Arkitekturen er designet til at være:
+Denne arkitektur er **simpel, funktionel og vedligeholdelig**. Ved at følge MedusaJS' officielle vejledning og undgå unødvendig kompleksitet, har vi opnået en robust løsning der er klar til udvikling.
 
-- **Skalerbar:** Håndterer vækst fra 0 til 1000+ kunder
-- **Vedligeholdelig:** Klar struktur og shared packages
-- **Sikker:** RLS policies, authentication, rate limiting
-- **Performant:** Optimerede queries, caching, ISR
-- **Udviklervenlig:** Clear separation of concerns, consistent patterns
-
-**Relaterede Dokumenter:**
-- `01-Project_Brief.md`
-- `02-Product_Requirements_Document.md`
-- `03-Tech_Stack.md`
-- `04-Database_Schema.md`
-- `05-API_Design.md`
-- `06-Backend_Guide.md`
-- `07-Frontend_Guide.md`
+**Key Principles:**
+- **Simplicity:** Two directories, clear separation
+- **Official tools:** Using `create-medusa-app`
+- **Documentation:** Following MedusaJS docs
+- **Pragmatism:** Solve problems, don't create them
 
 ---
 
 **Dokument ejer:** Nicklas Eskou  
-**Sidst opdateret:** 21. oktober 2025  
+**Sidst opdateret:** 24. januar 2025  
 **Fil lokation:** `.project/08-Architecture.md`  
-**Status:** Active
-
-
+**Status:** Active  
+**Revision:** 3.0 (CORE-19)

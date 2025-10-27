@@ -812,48 +812,51 @@ module.exports = {
 
 ## 8. Implementation Timeline
 
-### **Week 1-2: Project Foundation (Monorepo Setup)**
+### **Week 1-2: Project Foundation (Simple Setup)**
 
-**Day 1-3: Monorepo Foundation**
+**Day 1: MedusaJS + Storefront Installation** ✅ (Completed in CORE-19)
 ```bash
-# Initialize Turborepo + pnpm workspaces
-pnpm init
-pnpm add -D turbo
+# Install MedusaJS backend + Next.js storefront together
+npx create-medusa-app@latest beauty-shop --skip-db
 
-# Create monorepo structure
-mkdir -p apps/storefront apps/admin apps/medusa
-mkdir -p packages/ui packages/types packages/config
+# When prompted: "Would you like to install the Next.js Starter Storefront?"
+# Answer: YES
 
-# Setup Turborepo config
-# Create turbo.json and pnpm-workspace.yaml
+# Result:
+# - beauty-shop/ (MedusaJS backend + admin)
+# - beauty-shop-storefront/ (Next.js 15 storefront)
 ```
 
-**Day 4-7: App Installation**
+**Day 2-3: Database Configuration & Testing** ✅ (Completed in CORE-19)
 ```bash
-# MedusaJS 2.0 (backend + admin)
-pnpm create medusa-app@latest apps/medusa \
-  --db-url "postgresql://postgres:[PASSWORD]@db.aakjzquwftmtuzxjzxbv.supabase.co:5432/postgres"
+# Configure Supabase Transaction Pooler
+# Edit beauty-shop/.env with DATABASE_URL
 
-# Next.js 15 Storefront
-cd apps/storefront
-pnpm create next-app@latest . --typescript --tailwind --app
+# Run MedusaJS migrations
+cd beauty-shop
+npx medusa db:migrate
 
-# Payload CMS
-cd apps/admin
-pnpm create payload-app@latest .
+# Create admin user
+npx medusa user -e admin@medusajs.com -p supersecret
+
+# Start backend
+npm run dev
+
+# Start storefront (separate terminal)
+cd ../beauty-shop-storefront
+npm run dev
 ```
 
-**Day 8-10: Shared Packages & Integration**
-- Setup shared UI components (`packages/ui/`)
-- Configure shared TypeScript types (`packages/types/`)
-- Setup shared configs (`packages/config/`)
-- Configure Supabase schema separation
-- Test cross-package imports
+**Day 4-5: Custom Schema & Integration**
+- Configure Supabase custom schemas (`beauty_shop`, `payload`)
+- Run custom migrations for user profiles, subscriptions, content blocks
+- Test database connections
+- Configure Medusa Admin (Regions, Sales Channels, API Keys)
 
-**Day 8-14: Basic E-commerce Flow**
+**Day 6-7: Basic E-commerce Flow**
 - Product catalog implementation
 - Shopping cart functionality
-- Stripe checkout integration
+- Stripe checkout integration (planned)
 - Order confirmation system
 
 ### **Week 3-4: Advanced Features**

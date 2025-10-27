@@ -1,10 +1,11 @@
 # 🚀 Backend Udviklingsguide
 **Beauty Shop – E-commerce Platform for Men's Skincare**
 
-**Version:** 1.0  
-**Dato:** 14. oktober 2025  
-**Status:** Ready for Implementation  
+**Version:** 2.0  
+**Dato:** 24. januar 2025  
+**Status:** Active (Updated for CORE-19)  
 **Dokument ejer:** Nicklas Eskou  
+**Architecture:** Simple MedusaJS Setup  
 **Target Audience:** Mid-level developers building from scratch
 
 ---
@@ -30,22 +31,25 @@
 
 **System Requirements:**
 - Node.js 20.x eller nyere
-- pnpm 8.x eller nyere (anbefalet for monorepo)
+- npm 10.x eller nyere
 - PostgreSQL 15.x (håndteres af Supabase)
 - Git 2.40+
 
 **Development Tools:**
-- VS Code med anbefalede extensions
+- Cursor IDE (anbefalet) eller VS Code
 - Postman eller Insomnia for API testing
-- Docker (valgfrit, for lokale services)
+- Supabase CLI (optional, for migrations)
 
-**⚠️ Important:** Beauty Shop bruger en **monorepo struktur** med Turborepo + pnpm workspaces. MedusaJS backend er placeret i `apps/medusa/` sammen med Next.js storefront (`apps/storefront/`) og Payload CMS (`apps/admin/`).
+**⚠️ Architecture Update (CORE-19):**
+Beauty Shop bruger nu en **simpel to-directory struktur** efter at have afvist den komplekse Turborepo monorepo tilgang:
+- `beauty-shop/` - MedusaJS backend + integrated admin
+- `beauty-shop-storefront/` - Next.js 15 storefront
 
-**Monorepo Benefits:**
-- Shared packages (`packages/ui/`, `packages/types/`, `packages/config/`)
-- Coordinated builds med Turborepo
-- Type safety på tværs af apps
-- Consistent tooling og dependencies
+**Why Simple Architecture:**
+- Følger MedusaJS official documentation
+- Ingen unødvendig kompleksitet
+- Hurtigere setup (4 timer vs 8+ timer failed)
+- Nemmere at vedligeholde
 
 ### 1.2 Environment Setup
 

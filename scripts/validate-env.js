@@ -18,7 +18,7 @@ const OPTIONAL_VARS = {
 function validateEnv() {
   console.log('🔍 Validating environment variables...\n')
   
-  const envFile = '.env'
+  const envFile = 'beauty-shop/.env'
   if (!fs.existsSync(envFile)) {
     console.error('❌ .env file not found')
     console.error('   Run: node scripts/setup-env.js')
