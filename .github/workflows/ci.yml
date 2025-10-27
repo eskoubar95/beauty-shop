@@ -23,7 +23,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+      
+      - name: Get Yarn cache directory paths
+        id: yarn-cache-dir-path
+        run: |
+          echo "dir=$(cd beauty-shop && yarn cache dir)" >> $GITHUB_OUTPUT
+          echo "backend_modules=$(cd beauty-shop && pwd)/node_modules" >> $GITHUB_OUTPUT
+          echo "storefront_modules=$(cd beauty-shop-storefront && pwd)/node_modules" >> $GITHUB_OUTPUT
+      
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            beauty-shop/node_modules
+            beauty-shop-storefront/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       
       - name: Install root dependencies
         run: npm ci --prefer-offline
@@ -73,7 +90,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'yarn'
+      
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            beauty-shop/node_modules
+            beauty-shop-storefront/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       
       - name: Install backend dependencies
         run: cd beauty-shop && yarn install --frozen-lockfile
@@ -103,7 +129,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'yarn'
+      
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: beauty-shop-storefront/node_modules
+          key: ${{ runner.os }}-yarn-storefront-${{ hashFiles('beauty-shop-storefront/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-storefront-
       
       - name: Install storefront dependencies
         run: cd beauty-shop-storefront && yarn install --frozen-lockfile
