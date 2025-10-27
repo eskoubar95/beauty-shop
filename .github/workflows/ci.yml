@@ -67,6 +67,12 @@ jobs:
         continue-on-error: true
       
       - name: Run build
+        env:
+          # Mock environment variables for CI build
+          NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: pk_ci_build_mock_key_for_testing
+          NEXT_PUBLIC_BASE_URL: http://localhost:8000
+          NEXT_PUBLIC_DEFAULT_REGION: us
+          MEDUSA_BACKEND_URL: http://localhost:9000
         run: npm run build
       
       - name: Run secrets check
@@ -151,6 +157,12 @@ jobs:
         run: cd beauty-shop-storefront && yarn install --immutable
       
       - name: Build storefront
+        env:
+          # Mock environment variables for CI build
+          NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: pk_ci_build_mock_key_for_testing
+          NEXT_PUBLIC_BASE_URL: http://localhost:8000
+          NEXT_PUBLIC_DEFAULT_REGION: us
+          MEDUSA_BACKEND_URL: http://localhost:9000
         run: cd beauty-shop-storefront && yarn build
       
       - name: Upload build artifacts
