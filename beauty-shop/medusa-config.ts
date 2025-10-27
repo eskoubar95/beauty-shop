@@ -5,7 +5,7 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    databaseExtra: process.env.DATABASE_EXTRA ? JSON.parse(process.env.DATABASE_EXTRA) : undefined,
+    databaseDriverOptions: process.env.DATABASE_EXTRA ? JSON.parse(process.env.DATABASE_EXTRA) : undefined,
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
