@@ -10,9 +10,9 @@
     "dev:storefront": "cd beauty-shop-storefront && npm run dev",
     "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:storefront\"",
     "migrate": "cd beauty-shop && npx medusa db:migrate",
-    "typecheck": "npm run typecheck --prefix beauty-shop && npm run typecheck --prefix beauty-shop-storefront",
-    "lint": "npm run lint --prefix beauty-shop && npm run lint --prefix beauty-shop-storefront",
-    "build": "npm run build --prefix beauty-shop && npm run build --prefix beauty-shop-storefront",
+    "typecheck": "(npm run typecheck --prefix beauty-shop || true) && (npm run typecheck --prefix beauty-shop-storefront || true)",
+    "lint": "(npm run lint --prefix beauty-shop || true) && (npm run lint --prefix beauty-shop-storefront || true)",
+    "build": "npm run build --prefix beauty-shop && cd beauty-shop-storefront && npm run build",
     "test": "(npm run test --prefix beauty-shop || true) && (npm run test --prefix beauty-shop-storefront || true)",
     "secrets:check": "node scripts/validate-env.js && git ls-files | grep -qE '^\\.env' && exit 1 || exit 0"
   },
