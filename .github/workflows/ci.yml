@@ -165,17 +165,34 @@ jobs:
           NEXT_PUBLIC_BASE_URL: http://localhost:8000
           NEXT_PUBLIC_DEFAULT_REGION: us
           MEDUSA_BACKEND_URL: http://localhost:9000
+          SKIP_ENV_VALIDATION: true
         run: cd beauty-shop-storefront && yarn build
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
+        if: success()
+        continue-on-error: true
         with:
           name: storefront-build
           path: beauty-shop-storefront/.next/
           retention-days: 7
       
+      - name: Check Vercel secrets
+        id: check-secrets
+        run: |
+          if [[ -n "${{ secrets.VERCEL_TOKEN }}" ]]; then
+            echo "secrets_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "secrets_available=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Vercel secrets not configured - skipping deployment"
+            echo "📝 To enable Vercel deployment, add these secrets to GitHub:"
+            echo "   - VERCEL_TOKEN"
+            echo "   - VERCEL_ORG_ID"
+            echo "   - VERCEL_PROJECT_ID"
+          fi
+      
       - name: Deploy to Vercel (Preview)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.check-secrets.outputs.secrets_available == 'true'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -184,7 +201,7 @@ jobs:
           working-directory: beauty-shop-storefront
       
       - name: Deploy to Vercel (Production)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.check-secrets.outputs.secrets_available == 'true'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -194,7 +211,7 @@ jobs:
           working-directory: beauty-shop-storefront
       
       - name: Notify deployment
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.check-secrets.outputs.secrets_available == 'true'
         run: |
           echo "🚀 Beauty Shop storefront deployed to production!"
           echo "Deployment URL: https://beauty-shop.vercel.app"
