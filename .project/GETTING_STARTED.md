@@ -6,54 +6,33 @@
 
 ## 📊 Current Status
 
-**Phase:** Foundation Phase (Week 1-2)  
-**Current Sprint:** Setup infrastructure and development environment  
-**Next Milestone:** Complete all 5 Foundation issues → Start MVP Development
+**Phase:** Foundation Phase (Completed ✅)  
+**Current Sprint:** MVP Development  
+**Architecture:** Simple MedusaJS + Next.js structure (CORE-19)
 
 ---
 
-## 🎯 Foundation Phase (MUST DO FIRST)
+## 🎯 Foundation Phase (COMPLETED)
 
-These 5 issues must be completed **in order** before any MVP work can begin:
+✅ **CORE-19: Fix Fundamental Architecture** (Completed January 24, 2025)
+   - Fresh MedusaJS installation via `create-medusa-app`
+   - Next.js 15 storefront (integrated)
+   - Supabase database configuration
+   - Custom schema migrations
+   - **Result:** Fully functional setup in ~4 hours
+   - **Replaced:** Failed CORE-16 Turborepo monorepo
 
-### Priority Order
+**Key Learnings:**
+- ❌ CORE-16 (Turborepo monorepo) failed after 8+ hours
+- ✅ CORE-19 (Simple MedusaJS setup) succeeded in 4 hours
+- **Lesson:** Follow official documentation, don't fight the framework
 
-1. **CORE-15: Environment Configuration** ⚡ START HERE
-   - Setup all env vars for dev + production
-   - Create .env.example templates
-   - Document secrets management
-   - **Why first:** All other tasks depend on env vars
-   - **Estimated:** ~2-3 hours
+**Architecture Decision:**
+The project now uses a simple two-directory structure:
+- `beauty-shop/` - MedusaJS backend + admin
+- `beauty-shop-storefront/` - Next.js storefront
 
-2. **CORE-4: GitHub Repository Setup**
-   - GitHub Actions CI/CD pipeline
-   - Branch protection rules
-   - Issue templates
-   - **Depends on:** CORE-15 (needs env vars for CI)
-   - **Estimated:** ~3-4 hours
-
-3. **CORE-5: Supabase Database Setup**
-   - Create Supabase project (dev + prod)
-   - Implement database schema
-   - Configure RLS policies
-   - **Depends on:** CORE-15 (needs DATABASE_URL)
-   - **Estimated:** ~6-8 hours
-
-4. **CORE-6: MedusaJS Backend Setup**
-   - Initialize MedusaJS v2
-   - Stripe + Clerk integrations
-   - Basic API structure
-   - **Depends on:** CORE-15, CORE-5
-   - **Estimated:** ~8-10 hours
-
-5. **CORE-7: Next.js Frontend Setup**
-   - Next.js 15 + Tailwind + shadcn/ui
-   - Design tokens
-   - Basic layout structure
-   - **Depends on:** CORE-15, CORE-6
-   - **Estimated:** ~6-8 hours
-
-**Total Foundation Phase:** ~25-33 hours (~1-1.5 weeks for solo dev)
+No Turborepo, no shared packages, no unnecessary complexity.
 
 ---
 
@@ -80,7 +59,7 @@ Start here to understand the project:
 
 **Prerequisites:**
 - Node.js 20+
-- pnpm (recommended) or npm
+- npm 10+ (or pnpm 8+)
 - GitHub CLI (optional, but recommended)
 - Cursor IDE (with Linear + GitHub MCP configured)
 
@@ -90,12 +69,29 @@ Start here to understand the project:
 git clone https://github.com/eskoubar95/beauty-shop.git
 cd beauty-shop
 
-# Install dependencies (when package.json exists)
-pnpm install
-
-# Copy environment templates (after CORE-15 is done)
+# Backend setup
+cd beauty-shop
 cp .env.example .env
+# Edit .env with your Supabase credentials
+npm install
+
+# Storefront setup
+cd ../beauty-shop-storefront
 cp .env.local.example .env.local
+# Edit .env.local with your MedusaJS backend URL
+npm install
+
+# Run migrations
+cd ../beauty-shop
+npx medusa db:migrate
+
+# Create admin user
+npx medusa user -e admin@medusajs.com -p supersecret
+
+# Configure Medusa Admin
+# 1. Create Region (Settings → Regions)
+# 2. Create Sales Channel (Settings → Sales Channels)
+# 3. Link Publishable API Key to Sales Channel
 
 # Fill in your secrets (see .project/secrets-management.md)
 ```
@@ -173,48 +169,52 @@ If this works, your Linear MCP is configured correctly.
 
 ---
 
-## ⚡ Quick Start: Foundation Phase
+## ⚡ Quick Start: Development
 
-### Step 1: Start with CORE-15
+### Step 1: Start Backend
 
 ```bash
-# In Cursor:
-/fetch-linear-ticket CORE-15
-
-# This will show you the issue details, dependencies, and implementation approach
+cd beauty-shop
+npm run dev
 ```
 
-### Step 2: Create Implementation Plan
+Backend available at: `http://localhost:9000`  
+Admin available at: `http://localhost:9000/app`
+
+### Step 2: Start Storefront
 
 ```bash
-/create-implementation-plan
+# In a separate terminal
+cd beauty-shop-storefront
+npm run dev
 ```
 
-This will guide you through creating a structured plan for CORE-15.
+Storefront available at: `http://localhost:8000`
 
-### Step 3: Execute Phase by Phase
-
-```bash
-/execute-plan-phase
-```
-
-This will implement the plan step by step with pause points.
-
-### Step 4: Quality Checks
+### Step 3: Start Working on Features
 
 ```bash
+# Fetch your Linear ticket
+/fetch-linear-ticket CORE-XX
+
+# Create implementation plan (if complex)
+/create-implementation-plan CORE-XX
+
+# Execute phase by phase
+/execute-plan-phase .project/plans/[plan-file].md 0
+
+# Run quality checks before PR
 /prepare-pr
+
+# Create PR
+/create-pr-with-linear CORE-XX
 ```
 
-This runs all checks (lint, typecheck, tests, build).
+### Architecture Reference
 
-### Step 5: Create PR
-
-```bash
-/create-pr-with-linear CORE-15
-```
-
-This creates a GitHub PR with automatic Linear linking.
+See the complete setup guide in the root `README.md` or refer to:
+- `08-Architecture.md` - Complete architecture documentation
+- `.project/lessons-learned.md` - CORE-19 post-mortem and learnings
 
 ---
 
@@ -472,6 +472,7 @@ Once all 5 Foundation issues are done:
 
 **Ready to start?** Run: `/fetch-linear-ticket CORE-15` 🚀
 
-*Last updated: October 21, 2025*  
-*Maintained by: Nicklas Eskou*
+*Last updated: January 24, 2025*  
+*Maintained by: Nicklas Eskou*  
+*Architecture: Simple MedusaJS + Next.js (CORE-19)*
 

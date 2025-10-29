@@ -136,9 +136,11 @@
 | **Foundation Tasks (Ready to Start)** |
 | Environment Configuration | 📋 Planned | [CORE-15](https://linear.app/beauty-shop/issue/CORE-15) | Dev Team |
 | GitHub Repository Setup | 📋 Planned | [CORE-4](https://linear.app/beauty-shop/issue/CORE-4) | Dev Team |
-| Supabase Database Setup | 📋 Planned | [CORE-5](https://linear.app/beauty-shop/issue/CORE-5) | Dev Team |
-| MedusaJS Backend Setup | 📋 Planned | [CORE-6](https://linear.app/beauty-shop/issue/CORE-6) | Dev Team |
-| Next.js Frontend Setup | 📋 Planned | [CORE-7](https://linear.app/beauty-shop/issue/CORE-7) | Dev Team |
+| Monorepo Setup (MedusaJS + Next.js + Payload) | 📋 Planned | [CORE-16](https://linear.app/beauty-shop/issue/CORE-16) | Dev Team |
+| **Deprecated Tasks (Merged into CORE-16)** |
+| ~~Supabase Database Setup~~ | ❌ Cancelled | [~~CORE-5~~](https://linear.app/beauty-shop/issue/CORE-5) | - |
+| ~~MedusaJS Backend Setup~~ | ❌ Merged | [~~CORE-6~~](https://linear.app/beauty-shop/issue/CORE-6) | - |
+| ~~Next.js Frontend Setup~~ | ❌ Merged | [~~CORE-7~~](https://linear.app/beauty-shop/issue/CORE-7) | - |
 | **Other Items** |
 | Tech stack confirmed | ✅ Done | - | Team |
 | Linear project setup | ✅ Done | - | Nicklas |
@@ -162,9 +164,11 @@
 **Priority Order:**
 1. **CORE-15**: Environment Configuration (2-3 hours)
 2. **CORE-4**: GitHub Repository Setup (3-4 hours)
-3. **CORE-5**: Supabase Database Setup (6-8 hours)
-4. **CORE-6**: MedusaJS Backend Setup (8-10 hours)
-5. **CORE-7**: Next.js Frontend Setup (6-8 hours)
+3. **CORE-16**: Monorepo Setup (MedusaJS + Next.js + Payload CMS) (12-16 hours)
+
+**Total Estimated Time:** ~17-23 hours (~3-5 days for solo dev)
+
+**Note:** CORE-16 replaces the old CORE-5, CORE-6, and CORE-7 with a unified monorepo approach, saving ~2-3 days!
 
 ### Week 2-3:
 1. ✅ Complete Foundation Phase

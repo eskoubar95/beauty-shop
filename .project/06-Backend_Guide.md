@@ -1,10 +1,11 @@
 # 🚀 Backend Udviklingsguide
 **Beauty Shop – E-commerce Platform for Men's Skincare**
 
-**Version:** 1.0  
-**Dato:** 14. oktober 2025  
-**Status:** Ready for Implementation  
+**Version:** 2.0  
+**Dato:** 24. januar 2025  
+**Status:** Active (Updated for CORE-19)  
 **Dokument ejer:** Nicklas Eskou  
+**Architecture:** Simple MedusaJS Setup  
 **Target Audience:** Mid-level developers building from scratch
 
 ---
@@ -35,9 +36,20 @@
 - Git 2.40+
 
 **Development Tools:**
-- VS Code med anbefalede extensions
+- Cursor IDE (anbefalet) eller VS Code
 - Postman eller Insomnia for API testing
-- Docker (valgfrit, for lokale services)
+- Supabase CLI (optional, for migrations)
+
+**⚠️ Architecture Update (CORE-19):**
+Beauty Shop bruger nu en **simpel to-directory struktur** efter at have afvist den komplekse Turborepo monorepo tilgang:
+- `beauty-shop/` - MedusaJS backend + integrated admin
+- `beauty-shop-storefront/` - Next.js 15 storefront
+
+**Why Simple Architecture:**
+- Følger MedusaJS official documentation
+- Ingen unødvendig kompleksitet
+- Hurtigere setup (4 timer vs 8+ timer failed)
+- Nemmere at vedligeholde
 
 ### 1.2 Environment Setup
 

@@ -1,46 +1,59 @@
 ## 🧭 07 — Frontend Development Guide
 
-**Version:** 1.0  
-**Dato:** 19. oktober 2025  
-**Status:** Klar til implementering  
+**Version:** 2.0  
+**Dato:** 24. januar 2025  
+**Status:** Active (Updated for CORE-19)  
 **Dokumentejer:** Nicklas Eskou  
+**Architecture:** Simple MedusaJS + Next.js  
 **Filplacering:** `.project/07-Frontend_Guide.md`
 
 —
 
 ### Omfang
-Dette dokument guider frontend‑udviklingen af Beauty Shop webappen fra opsætning til lancering. Det dækker teknisk implementering, UI/UX, faser, komponentspecifikationer, API‑integration, test og performance. Designfiler administreres i `.figma-design/` (Figma Makes).
+Dette dokument guider frontend‑udviklingen af Beauty Shop webappen fra opsætning til lancering. Det dækker teknisk implementering, UI/UX, faser, komponentspecifikationer, API‑integration, test og performance.
 
 —
 
 ## 1) Projektopsætning & Miljø
 
+**⚠️ Architecture Update (CORE-19):**
+Beauty Shop bruger nu en **simpel to-directory struktur**. Next.js storefront blev automatisk installeret sammen med MedusaJS via `create-medusa-app`:
+- `beauty-shop/` - MedusaJS backend + integrated admin
+- `beauty-shop-storefront/` - Next.js 15 storefront
+
+**Why Simple Architecture:**
+- Følger MedusaJS official documentation
+- Ingen unødvendig kompleksitet
+- Storefront installeres sammen med MedusaJS (integrated setup)
+- Type safety via MedusaJS SDK
+
 ### 1.1 Framework og CLI
 - **Framework:** Next.js 15 (App Router) + React 19 + TypeScript
 - **Node:** v20 LTS
+- **Package Manager:** npm 10.x (eller pnpm 8.x)
 
 ```bash
-# Opret projekt
-npx create-next-app@latest beauty-shop --typescript --tailwind --app
-
-cd beauty-shop
+# Storefront er allerede installeret via create-medusa-app
+# Bekræft installation:
+cd beauty-shop-storefront
+npm install
 ```
 
 ### 1.2 Pakker og afhængigheder
-- UI & styling: `tailwindcss`, `@tailwindcss/forms`, `@tailwindcss/typography`, `shadcn/ui` (Radix UI), `lucide-react`
-- State: `zustand`
+- UI & styling: `tailwindcss`, `@tailwindcss/forms`, `@tailwindcss/typography`, `lucide-react`
+- State: Zustand (optional - kan tilføjes)
 - Formularer & validering: `react-hook-form`, `zod`, `@hookform/resolvers`
-- E‑commerce/SDKs: `@medusajs/medusa-js`, `@stripe/stripe-js`, `@clerk/nextjs`
-- Observability: `@sentry/nextjs`
-- Emails (post‑MVP): `resend`, `@react-email/components`
-- Dev tooling: `eslint`, `prettier`, `husky`, `lint-staged`
+- E‑commerce: `@medusajs/js-sdk` (pre-installed)
+- Authentication: `@clerk/nextjs` (planned)
+- Observability: `@sentry/nextjs` (planned)
+- Dev tooling: `eslint`, `prettier`
 
 ```bash
-npm install @medusajs/medusa-js @stripe/stripe-js @clerk/nextjs zustand \
-  react-hook-form zod @hookform/resolvers lucide-react
+# Install additional dependencies (from beauty-shop-storefront/)
+npm install react-hook-form zod @hookform/resolvers lucide-react
 
-npm install -D @sentry/nextjs eslint prettier husky lint-staged \
-  @tailwindcss/forms @tailwindcss/typography
+# Dev dependencies
+npm install -D prettier @tailwindcss/forms @tailwindcss/typography
 ```
 
 ### 1.3 Tailwind & shadcn/ui

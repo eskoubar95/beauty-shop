@@ -812,32 +812,51 @@ module.exports = {
 
 ## 8. Implementation Timeline
 
-### **Week 1-2: Project Foundation**
+### **Week 1-2: Project Foundation (Simple Setup)**
 
-**Day 1-3: Project Setup**
+**Day 1: MedusaJS + Storefront Installation** ✅ (Completed in CORE-19)
 ```bash
-# Frontend setup
-npx create-next-app@latest beauty-shop --typescript --tailwind --app
-cd beauty-shop
-npm install @medusajs/medusa-js @stripe/stripe-js zustand
-npm install -D @types/node
+# Install MedusaJS backend + Next.js storefront together
+npx create-medusa-app@latest beauty-shop --skip-db
 
-# Backend setup
-npx create-medusa-app@latest beauty-shop-backend
-cd beauty-shop-backend
-npm install @medusajs/medusa-plugin-stripe
+# When prompted: "Would you like to install the Next.js Starter Storefront?"
+# Answer: YES
+
+# Result:
+# - beauty-shop/ (MedusaJS backend + admin)
+# - beauty-shop-storefront/ (Next.js 15 storefront)
 ```
 
-**Day 4-7: Core Integration**
-- Connect Next.js to MedusaJS API
-- Setup Clerk authentication
-- Configure Supabase database
-- Deploy to staging environments
+**Day 2-3: Database Configuration & Testing** ✅ (Completed in CORE-19)
+```bash
+# Configure Supabase Transaction Pooler
+# Edit beauty-shop/.env with DATABASE_URL
 
-**Day 8-14: Basic E-commerce Flow**
+# Run MedusaJS migrations
+cd beauty-shop
+npx medusa db:migrate
+
+# Create admin user
+npx medusa user -e admin@medusajs.com -p supersecret
+
+# Start backend
+npm run dev
+
+# Start storefront (separate terminal)
+cd ../beauty-shop-storefront
+npm run dev
+```
+
+**Day 4-5: Custom Schema & Integration**
+- Configure Supabase custom schemas (`beauty_shop`, `payload`)
+- Run custom migrations for user profiles, subscriptions, content blocks
+- Test database connections
+- Configure Medusa Admin (Regions, Sales Channels, API Keys)
+
+**Day 6-7: Basic E-commerce Flow**
 - Product catalog implementation
 - Shopping cart functionality
-- Stripe checkout integration
+- Stripe checkout integration (planned)
 - Order confirmation system
 
 ### **Week 3-4: Advanced Features**

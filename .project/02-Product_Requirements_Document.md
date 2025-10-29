@@ -2302,22 +2302,18 @@ Vi overtræder GDPR, kosmetik-regulering, eller andre love.
    - Estimated: 3-4 hours
    - Depends on: CORE-15
 
-3. **CORE-5: Supabase Database Setup**
+3. **CORE-16: Monorepo Setup with MedusaJS, Next.js, and Payload CMS**
    - Labels: `human-required`, `high-risk`, `Infra`
-   - Estimated: 6-8 hours
+   - Estimated: 12-16 hours
    - Depends on: CORE-15
+   - **Note:** Replaces CORE-5, CORE-6, and CORE-7 with unified monorepo approach
 
-4. **CORE-6: MedusaJS Backend Setup**
-   - Labels: `human-required`, `high-risk`, `Backend`
-   - Estimated: 8-10 hours
-   - Depends on: CORE-15, CORE-5
+**Total Foundation:** ~17-23 hours (~3-5 days for solo dev)
 
-5. **CORE-7: Next.js Frontend Setup**
-   - Labels: `human-required`, `Frontend`
-   - Estimated: 6-8 hours
-   - Depends on: CORE-15, CORE-6
-
-**Total Foundation:** ~25-33 hours (~1-1.5 weeks for solo dev)
+**Deprecated (Merged into CORE-16):**
+- ~~CORE-5: Supabase Database Setup~~ → Cancelled
+- ~~CORE-6: MedusaJS Backend Setup~~ → Merged into CORE-16
+- ~~CORE-7: Next.js Frontend Setup~~ → Merged into CORE-16
 
 ### How to Get Started
 

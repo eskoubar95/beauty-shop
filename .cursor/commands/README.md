@@ -2,7 +2,7 @@
 
 Reusable AI prompts for Beauty Shop development workflows. Type `/` in Cursor AI chat to access any command.
 
-**Total:** 35 commands (19 original + 16 new)
+**Total:** 36 commands (19 original + 17 new)
 
 ## 🆕 NEW: Plan-Based Development Workflow
 
@@ -43,6 +43,7 @@ For large features (>400 LOC), see **[PLAN-BASED-WORKFLOW.md](./PLAN-BASED-WORKF
 - `/add-documentation` - Generate/update comprehensive documentation
 - `/generate-commit-message` - Create Conventional Commit message
 - `/generate-pr-description` - Generate PR description from changes
+- `/resume-task` - Resume work on task across chat sessions
 - `/onboard-new-developer` - Complete onboarding checklist
 
 ---
@@ -551,6 +552,48 @@ Changes:
 
 Generate complete PR description.
 ```
+
+---
+
+#### `/resume-task`
+Resume work on existing task by reconstructing progress from Linear, git, and plan files.
+
+**When to use:**
+- Chat context limit hit (80+ messages)
+- Switching between implementation phases
+- Picking up work after break
+- Handing off task to another developer
+- Debugging "what went wrong"
+
+**Reconstructs:**
+- Linear issue status + recent comments
+- Implementation plan progress (plan vs. actual)
+- Git history (commits, branches, changes)
+- GitHub PR status
+- Uncommitted changes
+- Precise next steps
+
+**Example:**
+```
+/resume-task CORE-4
+
+Scenario: You're on message 80, agent suggests new chat
+Action: Open new chat, run /resume-task CORE-4
+Result: Complete context reconstruction with next steps
+```
+
+**Output:**
+- Complete task status summary
+- What's been done (commits, files, phases)
+- What's outstanding (uncommitted work, PR status)
+- Actionable next steps with commands to run
+- Context for why resuming (chat limit, break, handoff)
+
+**Best with:**
+- Consistent chat naming (e.g., "CORE-4 - Implementation")
+- Frequent commits (better progress tracking)
+- Linear comments (breadcrumbs for resume)
+- Implementation plans (plan vs. actual comparison)
 
 ---
 
