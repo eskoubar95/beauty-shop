@@ -1,9 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm ci && npm run build"
+buildCommand = "yarn install --frozen-lockfile && yarn build"
 
 [deploy]
-startCommand = "npm run start"
+startCommand = "yarn start"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on-failure"
