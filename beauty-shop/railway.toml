@@ -1,9 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "yarn install --frozen-lockfile && yarn build"
+buildCommand = "yarn install --frozen-lockfile && NODE_OPTIONS=--max-old-space-size=2048 yarn build"
 
 [deploy]
-startCommand = "yarn build && yarn start"
+startCommand = "NODE_OPTIONS=--max-old-space-size=2048 yarn build && yarn start"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 
