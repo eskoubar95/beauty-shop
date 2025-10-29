@@ -323,10 +323,10 @@ NEXT_PUBLIC_DEFAULT_REGION=us
 ### 6.1 Production Deployment
 
 **MedusaJS Backend:**
-- **Host:** Render or Railway (planned)
-- **Port:** 9000
-- **URL:** `https://api.beautyshop.com` (planned)
-- **Admin:** `https://api.beautyshop.com/app`
+- **Host:** Railway (chosen per CORE-21)
+- **Port:** 9000 (local), auto-assigned (production)
+- **URL:** `https://[project-name].railway.app` (Railway auto-generated)
+- **Admin:** `https://[project-name].railway.app/app`
 
 **Next.js Storefront:**
 - **Host:** Vercel (planned)

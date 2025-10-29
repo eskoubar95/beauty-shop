@@ -241,11 +241,47 @@ The project uses three schemas:
 
 ## 🚀 Deployment
 
-### Backend (MedusaJS)
+### Backend (MedusaJS) - Railway
 
-- Database: Supabase PostgreSQL
-- Host: Render or Railway
-- Environment: Set DATABASE_URL and secrets
+**Prerequisites:**
+- Railway account (https://railway.app)
+- Supabase database connection string
+- GitHub repository connected to Railway
+
+**Deployment Steps:**
+
+1. **Create Railway Project:**
+   - Go to Railway dashboard
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose `beauty-shop` repository
+   - Select `beauty-shop/` directory as root
+
+2. **Configure Environment Variables:**
+   - Go to Project → Variables
+   - Add all variables from `beauty-shop/.env.example`
+   - Generate secure secrets for `JWT_SECRET` and `COOKIE_SECRET`
+   - Update `ADMIN_CORS` and `AUTH_CORS` with Railway URL
+
+3. **Add Redis Service:**
+   - In Railway project, click "+ New"
+   - Select "Redis"
+   - Railway will auto-generate `REDIS_URL` variable
+
+4. **Deploy:**
+   - Railway will auto-deploy on git push to main
+   - Check deployment logs for errors
+   - Verify health endpoint: `https://[project].railway.app/health`
+
+5. **Create Admin User:**
+   ```bash
+   npx medusa user -e admin@beautyshop.com -p [secure-password]
+   ```
+
+**Production URLs:**
+- Backend API: `https://[project-name].railway.app`
+- Admin Panel: `https://[project-name].railway.app/app`
+- Health Check: `https://[project-name].railway.app/health`
 
 ### Storefront (Next.js)
 
