@@ -3,7 +3,7 @@ builder = "nixpacks"
 buildCommand = "yarn install --frozen-lockfile && yarn build"
 
 [deploy]
-startCommand = "yarn start"
+startCommand = "yarn build && yarn start"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 
