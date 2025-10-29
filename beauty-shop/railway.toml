@@ -1,9 +1,8 @@
 [build]
-builder = "nixpacks"
-buildCommand = "yarn install --frozen-lockfile && NODE_OPTIONS=--max-old-space-size=2048 yarn build"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "yarn start"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 
