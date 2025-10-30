@@ -1,0 +1,12 @@
+node_modules
+.git
+.env
+*.log
+.cache
+dist
+build
+
+# CRITICAL: Don't copy .medusa from source - it's generated during build
+# If we copy it from git, we'll overwrite the build artifacts
+.medusa
+
