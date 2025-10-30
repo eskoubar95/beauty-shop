@@ -2,6 +2,12 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+// Debug: Log Redis configuration at startup
+console.log('🔧 [CONFIG] REDIS_URL is:', process.env.REDIS_URL ? 'SET' : 'NOT SET')
+if (process.env.REDIS_URL) {
+  console.log('🔧 [CONFIG] REDIS_URL starts with:', process.env.REDIS_URL.substring(0, 25) + '...')
+}
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
