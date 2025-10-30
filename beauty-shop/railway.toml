@@ -6,4 +6,3 @@ buildCommand = "npm ci && npm run build:production"
 startCommand = "npm run start:production"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
-restartPolicyType = "on-failure"
