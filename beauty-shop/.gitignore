@@ -23,4 +23,5 @@ build
 !.yarn/sdks
 !.yarn/versions
 
-.medusa
+# Note: .medusa/ build artifacts needed for Railway deployment
+# Do not commit .medusa/ to git, but allow Railway to see it
