@@ -248,6 +248,15 @@ The project uses three schemas:
 - Supabase database connection string
 - GitHub repository connected to Railway
 
+**Important: Build Process**
+
+MedusaJS uses a special build process that creates a `.medusa/server` directory. The application **must** be started from this directory in production. The `railway.toml` file is configured to handle this automatically:
+
+- **Build Command:** `npm run build:production` (creates `.medusa/server` and installs production dependencies)
+- **Start Command:** `npm run start:production` (runs from `.medusa/server` directory)
+
+See [MedusaJS Build Documentation](https://docs.medusajs.com/learn/build) for details.
+
 **Deployment Steps:**
 
 1. **Create Railway Project:**
@@ -262,6 +271,7 @@ The project uses three schemas:
    - Add all variables from `beauty-shop/.env.example`
    - Generate secure secrets for `JWT_SECRET` and `COOKIE_SECRET`
    - Update `ADMIN_CORS` and `AUTH_CORS` with Railway URL
+   - **Important:** Do NOT set `DISABLE_ADMIN=true` (admin panel should work with correct build process)
 
 3. **Add Redis Service:**
    - In Railway project, click "+ New"
@@ -272,6 +282,7 @@ The project uses three schemas:
    - Railway will auto-deploy on git push to main
    - Check deployment logs for errors
    - Verify health endpoint: `https://[project].railway.app/health`
+   - Admin panel should be accessible at: `https://[project].railway.app/app`
 
 5. **Create Admin User:**
    ```bash
@@ -282,6 +293,14 @@ The project uses three schemas:
 - Backend API: `https://[project-name].railway.app`
 - Admin Panel: `https://[project-name].railway.app/app`
 - Health Check: `https://[project-name].railway.app/health`
+
+**Troubleshooting:**
+
+If you encounter "Could not find index.html in admin build directory" error:
+- Verify `railway.toml` uses `build:production` and `start:production` scripts
+- Ensure `DISABLE_ADMIN` is NOT set to `true` in environment variables
+- Check Railway logs to confirm build creates `.medusa/server` directory
+- See [MedusaJS Troubleshooting](https://docs.medusajs.com/resources/troubleshooting/medusa-admin/build-error)
 
 ### Storefront (Next.js)
 
