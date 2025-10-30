@@ -7,6 +7,9 @@ nixPkgs = ["nodejs", "yarn"]
 [build.nixpacksPlan.phases.install]
 cmds = ["yarn install"]
 
+[build.nixpacksPlan.phases.build]
+cmds = ["yarn build"]
+
 [deploy]
 startCommand = "medusa migrations run && medusa start"
 healthcheckPath = "/health"
