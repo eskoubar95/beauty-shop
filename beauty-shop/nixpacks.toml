@@ -8,5 +8,5 @@ cmds = ["yarn install"]
 cmds = ["yarn build"]
 
 [start]
-cmd = "medusa migrations run && medusa start"
+cmd = "npx medusa start"
 
