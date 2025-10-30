@@ -24,7 +24,7 @@ WORKDIR /app
 COPY package.json yarn.lock .yarnrc.yml ./
 
 # Install production dependencies only
-RUN yarn workspaces focus --production
+RUN yarn install --production --frozen-lockfile
 
 # Copy built artifacts from builder stage
 COPY --from=builder /app/.medusa ./.medusa
