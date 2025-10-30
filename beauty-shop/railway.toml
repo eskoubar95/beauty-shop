@@ -1,8 +1,8 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm ci && npm run build:production"
+buildCommand = "yarn build:production"
 
 [deploy]
-startCommand = "npm run start:production"
+startCommand = "yarn start:production"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
