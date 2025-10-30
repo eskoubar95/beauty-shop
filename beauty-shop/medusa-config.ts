@@ -19,18 +19,18 @@ module.exports = defineConfig({
     // Disable admin panel in production if DISABLE_ADMIN is set
     disable: process.env.DISABLE_ADMIN === 'true',
   },
-  modules: [
-    {
+  modules: {
+    cacheService: {
       resolve: "@medusajs/cache-redis",
       options: { 
         redisUrl: process.env.REDIS_URL,
       },
     },
-    {
+    eventBusModuleService: {
       resolve: "@medusajs/event-bus-redis",
       options: { 
         redisUrl: process.env.REDIS_URL,
       },
     },
-  ],
+  },
 })
