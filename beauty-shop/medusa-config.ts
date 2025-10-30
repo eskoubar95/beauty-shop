@@ -14,5 +14,9 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
+  },
+  admin: {
+    // Disable admin panel in production if DISABLE_ADMIN is set
+    disable: process.env.DISABLE_ADMIN === 'true',
   }
 })
