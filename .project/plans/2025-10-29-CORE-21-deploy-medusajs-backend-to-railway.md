@@ -514,15 +514,240 @@ MEDUSA_ADMIN_ONBOARDING_TYPE=skip
 
 ---
 
-## Phase 4: Deployment & Verification
+## Phase 4: Deployment & Verification (OPDATERET - Build Fix, Server/Worker Split, Redis Test)
 
 ### Overview
-Trigger Railway deployment, verificer build success, test health endpoint og verificer alle kritikke funktioner.
+Fix build command konfiguration, implementer Server/Worker split (best practice for MedusaJS 2.0), trigger Railway deployment, og verificer alle kritiske funktioner inkl. Redis connection.
+
+**Key Updates:**
+- ✅ Fix build command i `railway.toml` (krævet for deployment success)
+- ✅ Implementer separate Server og Worker services (best practice)
+- ✅ Test Redis URL connection (verificer production-ready setup)
 
 ### Changes Required:
 
-#### 1. Trigger Deployment (Manual/Auto)
-**Action:** Railway auto-deploys on git push, eller manual trigger
+#### 1. Fix Build Command Configuration (KRITISK - OPDATERET)
+**Action:** Opdater `railway.toml` med eksplicit build command
+**Problem Identified:** Deployment logs viser "Could not find index.html in the admin build directory" - `medusa build` kører ikke før `medusa start`.
+
+**File:** `beauty-shop/railway.toml`
+**Changes:** Tilføj eksplicit build command
+
+```toml
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on-failure"
+```
+
+**Verification:**
+- [ ] `railway.toml` contains `buildCommand = "npm ci && npm run build"`
+- [ ] `railway.toml` contains `startCommand = "npm run start"`
+- [ ] Local test: `cd beauty-shop && npm run build` completes successfully
+
+**Rationale:**
+- Build command er kritisk - uden det fejler deployment
+- `npm ci` sikrer clean install (production-ready)
+- `npm run build` kører `medusa build` som skaber admin panel artifacts
+
+#### 2. Implement Server/Worker Split (BEST PRACTICE - NY)
+**Action:** Opret separate Railway services for Server og Worker (best practice for MedusaJS 2.0)
+**Reference:** Based on analysis: Medium artikel (Pether Maciejewski) og 306technologies guide anbefaler separate services.
+
+**Why Split?**
+- MedusaJS 2.0 anbefaler separate services i production
+- Server: Håndterer API requests, admin panel, auth
+- Worker: Kører background jobs (emails, webhooks, scheduled tasks)
+- Bedre resource management, isolerede fejl, skalerbarhed
+
+**Steps:**
+
+**2A. Create Server Service:**
+1. I Railway dashboard, gå til eksisterende `beauty-shop` service
+2. Rename service til `beauty-shop-server` (Settings → General → Name)
+   - Eller opret ny service: "+ New" → "GitHub Repo" → Select repo
+   - Set root directory: `beauty-shop/`
+   - Name: `beauty-shop-server`
+
+3. Server Service Environment Variables:
+   - Kopier alle eksisterende variables
+   - **Tilføj ny variable:** `MEDUSA_WORKER_MODE=server` (optional - kan bruges i config)
+   
+4. Server Service Start Command:
+   - Railway dashboard → Service Settings → Deploy
+   - Custom Start Command (override railway.toml): `npm run start:server`
+   - **Note:** Først skal vi oprette script i package.json (Step 2B)
+
+**2B. Update Package.json Scripts:**
+**File:** `beauty-shop/package.json`
+**Changes:** Tilføj separate start scripts
+
+```json
+{
+  "scripts": {
+    "build": "medusa build",
+    "start": "medusa start",
+    "start:server": "medusa start",
+    "start:worker": "medusa start",
+    "dev": "medusa develop"
+  }
+}
+```
+
+**Alternative Approach (if MedusaJS 2.0 supports worker mode flags):**
+Efter research, kan vi også bruge environment variables til at styre hvilke modules der loader. Tjek MedusaJS 2.0 docs for `MEDUSA_WORKER_MODE` eller lignende.
+
+**2C. Create Worker Service:**
+1. I Railway dashboard: "+ New" → "GitHub Repo"
+2. Select samme repository: `eskoubar95/beauty-shop`
+3. Set root directory: `beauty-shop/`
+4. Name: `beauty-shop-worker`
+
+5. Worker Service Environment Variables:
+   - Kopier ALLE environment variables fra Server service (samme database, Redis, secrets)
+   - **Tilføj:** `MEDUSA_WORKER_MODE=worker` (optional)
+
+6. Worker Service Start Command:
+   - Railway dashboard → Service Settings → Deploy
+   - Custom Start Command: `npm run start:worker`
+   
+7. Worker Service Settings:
+   - **Disable Healthcheck** (worker har ingen HTTP endpoint):
+     - Healthcheck Path: (leave empty or remove)
+     - Eller: Disable healthcheck i settings
+
+**Rationale:**
+- Separate services muliggør uafhængig scaling
+- Worker crashes påvirker ikke API server
+- Server kan scale til mange requests, worker kan scale til mange jobs
+- Følger MedusaJS 2.0 best practices
+
+**Important Notes:**
+- ⚠️ Begge services skal have samme environment variables (database, Redis, secrets)
+- ⚠️ Begge services skal connecte til samme Supabase database
+- ⚠️ Begge services skal connecte til samme Redis instance
+- ⚠️ Worker service har IKKE HTTP port (ingen health check endpoint)
+
+**Verification:**
+- [ ] Server service created/renamed: `beauty-shop-server`
+- [ ] Worker service created: `beauty-shop-worker`
+- [ ] Both services have same environment variables (DATABASE_URL, REDIS_URL, etc.)
+- [ ] Server start command: `npm run start:server` (or default `medusa start`)
+- [ ] Worker start command: `npm run start:worker` (or default `medusa start`)
+- [ ] Worker healthcheck disabled (optional, worker has no HTTP endpoint)
+
+#### 3. Verify Build Command Fix (KRITISK - OPDATERET)
+**Action:** Trigger deployment og verificer build kører korrekt
+**Expected:** Build logs skal vise `medusa build` output før server start
+
+**Steps:**
+1. Commit og push `railway.toml` opdateringer:
+   ```bash
+   git add beauty-shop/railway.toml beauty-shop/package.json
+   git commit -m "fix(CORE-21): Add build command to railway.toml, separate server/worker scripts"
+   git push origin feature/CORE-21-deploy-medusajs-backend-to-railway
+   ```
+
+2. Monitor Server Service Build:
+   - Railway dashboard → `beauty-shop-server` → Deployments → Latest
+   - Watch build logs
+   - **Expected build output:**
+     ```
+     Running build command: npm ci && npm run build
+     ...
+     medusa build
+     Building admin...
+     ...
+     Build completed successfully
+     ```
+   - **Should NOT see:** "Could not find index.html in the admin build directory"
+
+3. Verify Server Deployment:
+   - Build completes successfully
+   - Service status: "Active" (green)
+   - Health check passes
+
+**Verification:**
+- [ ] Build logs show `npm ci && npm run build`
+- [ ] Build logs show `medusa build` output
+- [ ] Build logs show "Build completed successfully" or similar success
+- [ ] Build logs do NOT show "Could not find index.html" error
+- [ ] Server service deployment status: "Active"
+
+#### 4. Test Redis URL Connection (KRITISK - OPDATERET)
+**Action:** Verificer Redis connection virker (not fake redis)
+**Problem Identified:** Logs kan vise "Local Event Bus installed" og "Locking module: Using in-memory as default" hvis Redis ikke virker.
+
+**Steps:**
+
+**4A. Verify Redis Configuration:**
+1. Railway dashboard → `beauty-shop-server` → Variables
+2. Verify `REDIS_URL` exists:
+   - Should be: `${{Redis.REDIS_URL}}` (Railway template syntax)
+   - Eller: `redis://default:password@hostname:6379` (full URL)
+3. Verify Redis service kører:
+   - Railway dashboard → Redis service
+   - Status skal være "Active" (green)
+
+**4B. Check Server Logs for Redis:**
+1. Railway dashboard → `beauty-shop-server` → Logs
+2. Look for Redis-related messages:
+
+**✅ GOOD (Redis Connected):**
+```
+Redis connected successfully
+Using Redis event bus
+Using Redis locking module
+```
+
+**❌ BAD (Fake Redis - Redis Not Connected):**
+```
+Local Event Bus installed. This is not recommended for production.
+Locking module: Using "in-memory" as default.
+```
+
+**4C. Test Redis from Railway CLI (Optional):**
+```bash
+# Link Railway CLI (if not already linked)
+cd beauty-shop
+railway link
+
+# Test Redis connection via Railway CLI
+railway run node -e "
+const redis = require('redis');
+const client = redis.createClient({ url: process.env.REDIS_URL });
+client.connect().then(() => {
+  console.log('Redis connected successfully');
+  client.quit();
+}).catch(err => {
+  console.error('Redis connection failed:', err);
+  process.exit(1);
+});
+"
+```
+
+**Expected:** "Redis connected successfully"
+
+**4D. Check Worker Service Redis Connection:**
+1. Railway dashboard → `beauty-shop-worker` → Logs
+2. Verify same Redis warnings do NOT appear
+
+**Verification:**
+- [ ] `REDIS_URL` variable exists in both Server and Worker services
+- [ ] `REDIS_URL` format is correct (Railway template syntax eller full URL)
+- [ ] Redis service status: "Active" in Railway
+- [ ] Server logs do NOT show "Local Event Bus installed" warning
+- [ ] Server logs do NOT show "Locking module: Using 'in-memory'" warning
+- [ ] Worker logs do NOT show same warnings
+- [ ] Railway CLI test (optional) confirms Redis connection
+
+#### 5. Trigger Deployment (Updated for Split Architecture)
+**Action:** Deploy både Server og Worker services
 **Methods:**
 
 **Option A: Auto-deploy (Recommended):**
@@ -692,28 +917,42 @@ Railway will auto-detect push and start deployment.
 - Created via CLI (not through UI)
 - Credentials stored securely in database
 
-### Success Criteria:
+### Success Criteria (OPDATERET):
 
 #### Automated Verification:
-- [ ] Railway build completes successfully (green status)
-- [ ] Health endpoint returns 200: `curl https://[url]/health`
-- [ ] Build logs show no TypeScript errors
-- [ ] Build logs show no npm install errors
-- [ ] Deployment status is "Active" in Railway dashboard
+- [ ] **Build Command:** Build logs show `npm ci && npm run build`
+- [ ] **Build Success:** Build logs show `medusa build` completes successfully
+- [ ] **No Build Errors:** Build logs do NOT show "Could not find index.html" error
+- [ ] **Server Deployment:** Server service status is "Active" (green)
+- [ ] **Worker Deployment:** Worker service status is "Active" (green)
+- [ ] **Health Endpoint:** Server health endpoint returns 200: `curl https://[server-url]/health`
+- [ ] **Build Logs:** No TypeScript errors, no npm install errors
 
 #### Manual Verification:
-- [ ] Railway URL accessible (no DNS errors)
-- [ ] Health endpoint responds: `/health` returns 200 OK
-- [ ] Database connection successful (no errors in logs)
-- [ ] Redis connection successful (no "fake redis" warnings)
-- [ ] Admin panel accessible: `/app` loads correctly
-- [ ] Store API responds: `/store/products` returns JSON
-- [ ] CORS headers correct (if testing from browser)
-- [ ] SSL/TLS enabled (browser shows secure connection)
-- [ ] Admin user created and can login
-- [ ] All environment variables loaded correctly (check logs)
+- [ ] **Build Command Fix:** `railway.toml` contains `buildCommand = "npm ci && npm run build"`
+- [ ] **Server Service:** `beauty-shop-server` service exists and is deployed
+- [ ] **Worker Service:** `beauty-shop-worker` service exists and is deployed
+- [ ] **Server URL:** Server URL accessible (no DNS errors)
+- [ ] **Health Endpoint:** `/health` returns 200 OK (server only)
+- [ ] **Database Connection:** Database connection successful (no errors in server logs)
+- [ ] **Redis Connection (Critical):** Server logs do NOT show "Local Event Bus installed" warning
+- [ ] **Redis Connection (Critical):** Server logs do NOT show "Locking module: Using 'in-memory'" warning
+- [ ] **Worker Redis:** Worker logs do NOT show same Redis warnings
+- [ ] **Admin Panel:** `/app` loads correctly on server URL
+- [ ] **Store API:** `/store/products` returns JSON (server)
+- [ ] **CORS Headers:** Correct (if testing from browser)
+- [ ] **SSL/TLS:** Enabled (browser shows secure connection)
+- [ ] **Admin User:** Created and can login
+- [ ] **Environment Variables:** All variables loaded correctly (check both services)
 
-**⚠️ PAUSE HERE** - Verify all above before considering deployment complete. Any failures require investigation and fixes.
+**⚠️ PAUSE HERE** - Verify all above before considering deployment complete. 
+
+**Priority Fixes:**
+1. ✅ **Build command fix** må være implementeret før deployment
+2. ✅ **Redis connection** skal være verificeret (ingen fake redis warnings)
+3. ⚠️ **Server/Worker split** er best practice men ikke kritisk for initial deployment (kan gøres senere)
+
+Any failures require investigation and fixes.
 
 ---
 
