@@ -24,34 +24,50 @@ async function getRegionMap(cacheId: string) {
     regionMapUpdated < Date.now() - 3600 * 1000
   ) {
     // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
-    const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
-      headers: {
-        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
-      },
-    }).then(async (response) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/store/regions`, {
+        headers: {
+          "x-publishable-api-key": PUBLISHABLE_API_KEY!,
+        },
+      })
+
+      // Check content-type before parsing JSON to avoid "Unexpected token" errors
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error(
+          `Expected JSON but got ${contentType}. Response status: ${response.status}. This usually means the fetch failed and returned an HTML error page.`
+        )
+      }
+
       const json = await response.json()
 
       if (!response.ok) {
-        throw new Error(json.message)
+        throw new Error(json.message || "Failed to fetch regions")
       }
 
-      return json
-    })
+      const { regions } = json
 
-    if (!regions?.length) {
-      throw new Error(
-        "No regions found. Please set up regions in your Medusa Admin."
-      )
-    }
+      if (!regions?.length) {
+        throw new Error(
+          "No regions found. Please set up regions in your Medusa Admin."
+        )
+      }
 
-    // Create a map of country codes to regions.
-    regions.forEach((region: HttpTypes.StoreRegion) => {
-      region.countries?.forEach((c) => {
-        regionMapCache.regionMap.set(c.iso_2 ?? "", region)
+      // Create a map of country codes to regions.
+      regions.forEach((region: HttpTypes.StoreRegion) => {
+        region.countries?.forEach((c) => {
+          regionMapCache.regionMap.set(c.iso_2 ?? "", region)
+        })
       })
-    })
 
-    regionMapCache.regionMapUpdated = Date.now()
+      regionMapCache.regionMapUpdated = Date.now()
+    } catch (error) {
+      // Re-throw with more context
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch regions: ${error.message}`)
+      }
+      throw error
+    }
   }
 
   return regionMapCache.regionMap

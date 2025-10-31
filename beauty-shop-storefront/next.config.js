@@ -1,5 +1,7 @@
 const checkEnvVariables = require("./check-env-variables")
 
+// Note: Env variable check runs at build time, not Edge runtime
+// This prevents deployment if vars missing, but won't catch runtime issues
 checkEnvVariables()
 
 /**
