@@ -179,28 +179,8 @@ export async function middleware(request: NextRequest) {
     // This prevents MIDDLEWARE_INVOCATION_FAILED errors
     console.error("Middleware error:", error)
     
-    // Fallback: If region fetching fails, try to continue without region-based routing
-    // This allows the site to work even if backend is temporarily unavailable
     const errorMessage = error instanceof Error ? error.message : "Unknown error"
     
-    // If it's a regions fetch error, redirect to /dk as fallback
-    if (errorMessage.includes("Failed to fetch regions")) {
-      const fallbackCountry = "dk"
-      const hasCountryCode = request.nextUrl.pathname.split("/")[1]?.toLowerCase() === fallbackCountry
-      
-      if (!hasCountryCode && !request.nextUrl.pathname.includes(".")) {
-        const redirectPath = request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
-        const redirectUrl = `${request.nextUrl.origin}/${fallbackCountry}${redirectPath}${request.nextUrl.search}`
-        
-        const fallbackResponse = NextResponse.redirect(redirectUrl, 307)
-        fallbackResponse.cookies.set("_medusa_cache_id", crypto.randomUUID(), {
-          maxAge: 60 * 60 * 24,
-        })
-        return fallbackResponse
-      }
-    }
-    
-    // For other errors, return error response
     return new NextResponse(
       JSON.stringify({
         error: "Middleware error",
