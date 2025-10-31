@@ -1,10 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
 
-const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
-const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
-
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
   regionMapUpdated: Date.now(),
@@ -12,6 +8,10 @@ const regionMapCache = {
 
 async function getRegionMap(cacheId: string) {
   const { regionMap, regionMapUpdated } = regionMapCache
+
+  // Read env vars at runtime, not at module load time (Edge Runtime compatibility)
+  const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
+  const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 
   if (!BACKEND_URL) {
     throw new Error(
@@ -84,6 +84,9 @@ async function getCountryCode(
 ) {
   try {
     let countryCode
+
+    // Read at runtime for Edge compatibility
+    const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
 
     const vercelCountryCode = request.headers
       .get("x-vercel-ip-country")
