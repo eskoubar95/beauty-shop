@@ -10,7 +10,6 @@ buildCommand = "yarn build:production"
 startCommand = "yarn start:production"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
-restartPolicyType = "on-failure"
 
 # Server-specific settings
 [deploy.environmentVariables]

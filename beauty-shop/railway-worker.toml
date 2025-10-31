@@ -9,8 +9,6 @@ buildCommand = "yarn build:production"
 # Worker mode - processes events from Redis queue
 startCommand = "yarn start:production:worker"
 # Workers don't need health checks (no HTTP server)
-restartPolicyType = "on-failure"
-restartPolicyMaxRetries = 10
 
 # Worker-specific settings
 [deploy.environmentVariables]
