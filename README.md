@@ -371,3 +371,4 @@ If you encounter "Could not find index.html in admin build directory" error:
 Built with ❤️ using MedusaJS and Next.js
 
 <!-- Phase 8: Vercel CI/CD test deployment -->
+<!-- Verified: GitHub integration disconnected - only CI/CD deploys now -->
