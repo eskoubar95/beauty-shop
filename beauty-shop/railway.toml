@@ -1,0 +1,17 @@
+# Railway Configuration for MedusaJS Server
+# This service handles HTTP requests (API + Admin)
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "yarn build:production"
+
+[deploy]
+# Server mode - handles HTTP traffic
+startCommand = "yarn start:production"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+
+# Server-specific settings
+[deploy.environmentVariables]
+WORKER_MODE = "false"
+NODE_ENV = "production"

@@ -23,4 +23,6 @@ build
 !.yarn/sdks
 !.yarn/versions
 
+# IMPORTANT: Do not commit .medusa/ build artifacts to git
+# Railway will build them during deployment
 .medusa

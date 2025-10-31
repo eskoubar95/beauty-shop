@@ -1,0 +1,17 @@
+# Railway Configuration for MedusaJS Worker
+# This service handles background jobs, subscribers, and async processing
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "yarn build:production"
+
+[deploy]
+# Worker mode - processes events from Redis queue
+startCommand = "yarn start:production:worker"
+# Workers don't need health checks (no HTTP server)
+
+# Worker-specific settings
+[deploy.environmentVariables]
+WORKER_MODE = "true"
+NODE_ENV = "production"
+

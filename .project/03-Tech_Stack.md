@@ -295,30 +295,31 @@ beauty-shop-storage/
 }
 ```
 
-### **Backend Hosting: Render** ✅
+### **Backend Hosting: Railway** ✅
 
-**Hvorfor Render:**
-- **MedusaJS support:** One-click deployment
+**Hvorfor Railway:**
+- **MedusaJS support:** Official deployment guide
 - **Auto-scaling:** Based on traffic patterns
 - **Background jobs:** Email processing, order fulfillment
-- **Database connections:** Easy Supabase integration
+- **Database connections:** Easy Supabase integration (Transaction Pooler)
+- **Redis included:** Managed Redis addon for caching/sessions
 - **Health checks:** Automatic restart on failures
 - **Logs:** Centralized logging and monitoring
+- **GitHub integration:** Auto-deploy on push
+- **CLI tool:** Command-line interface for deployments
 
-**Render Configuration:**
-```yaml
-# render.yaml
-services:
-  - type: web
-    name: beauty-shop-backend
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: beauty-shop-db
-          property: connectionString
+**Railway Configuration:**
+```toml
+# railway.toml
+[build]
+builder = "nixpacks"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on-failure"
 ```
 
 ### **CI/CD Pipeline: GitHub Actions** ✅
@@ -372,11 +373,15 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
       
-      - name: Deploy backend to Render (staging)
-        uses: render-actions/deploy@v1
-        with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+      - name: Deploy backend to Railway (staging)
+        # Railway auto-deploys on git push if configured
+        # Or use Railway CLI: railway up
+        run: |
+          if [ -n "${{ secrets.RAILWAY_TOKEN }}" ]; then
+            railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
+          else
+            echo "⚠️ Railway token not configured - skipping deployment"
+          fi
 
   deploy-production:
     if: github.ref == 'refs/heads/main'
@@ -391,11 +396,15 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
       
-      - name: Deploy backend to Render (production)
-        uses: render-actions/deploy@v1
-        with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+      - name: Deploy backend to Railway (production)
+        # Railway auto-deploys on git push if configured
+        # Or use Railway CLI: railway up --environment production
+        run: |
+          if [ -n "${{ secrets.RAILWAY_TOKEN }}" ]; then
+            railway up --service ${{ secrets.RAILWAY_SERVICE_ID }} --environment production
+          else
+            echo "⚠️ Railway token not configured - skipping deployment"
+          fi
       
       - name: Notify team
         uses: 8398a7/action-slack@v3
@@ -768,13 +777,13 @@ module.exports = {
 | Service | Plan | Monthly Cost | Notes |
 |---------|------|--------------|-------|
 | **Vercel** | Pro | $20 | Bandwidth, functions, previews |
-| **Render** | Starter | $7 | Backend hosting |
+| **Railway** | Starter | $5 | Backend hosting (Hobby plan) |
 | **Supabase** | Pro | $25 | Database + storage + auth |
 | **Stripe** | - | ~$50 | 1.4% + 1.8 DKK per transaction |
 | **Sentry** | Free | $0 | 5,000 errors/month |
 | **Resend** | Free | $0 | 3,000 emails/month |
 | **LaunchDarkly** | Free | $0 | 10,000 MAU |
-| **Payload CMS** | Self-hosted | $0 | On Render |
+| **Payload CMS** | Self-hosted | $0 | On Railway |
 
 **Total MVP Cost:** ~$102/month + transaction fees
 
@@ -783,7 +792,7 @@ module.exports = {
 | Service | Plan | Monthly Cost | Notes |
 |---------|------|--------------|-------|
 | **Vercel** | Pro | $20 | Same plan |
-| **Render** | Standard | $25 | Upgraded for more resources |
+| **Railway** | Developer | $20 | Upgraded for more resources |
 | **Supabase** | Pro | $25 | Same plan |
 | **Stripe** | - | ~$200 | Higher transaction volume |
 | **Sentry** | Team | $26 | 10,000 errors/month |
@@ -798,7 +807,7 @@ module.exports = {
 | Service | Plan | Monthly Cost | Notes |
 |---------|------|--------------|-------|
 | **Vercel** | Pro | $20 | May need Enterprise |
-| **Render** | Professional | $85 | Dedicated resources |
+| **Railway** | Team | $20/user | Dedicated resources, team features |
 | **Supabase** | Team | $599 | Higher limits |
 | **Stripe** | - | ~$1000+ | High transaction volume |
 | **Sentry** | Business | $80 | Higher limits |
@@ -958,7 +967,7 @@ npm run dev
 1. ✅ **Review and approve tech stack**
 2. 🔴 **Setup development environment**
 3. 🔴 **Create GitHub repositories**
-4. 🔴 **Configure Vercel and Render accounts**
+4. 🔴 **Configure Vercel and Railway accounts**
 5. 🔴 **Setup Supabase project**
 
 ### **Phase 1 (Weeks 1-2)**
