@@ -92,14 +92,14 @@ npx medusa db:migrate
 
 ### 5. Start Development Servers
 
-In separate terminals:
+#### Option A: Simple Development (Recommended for Getting Started)
 
 **Backend (Terminal 1):**
 ```bash
 cd beauty-shop
 npm run dev
 ```
-Backend will run on: http://localhost:9000
+Backend will run on: http://localhost:9000  
 Admin panel: http://localhost:9000/app
 
 **Storefront (Terminal 2):**
@@ -108,6 +108,32 @@ cd beauty-shop-storefront
 npm run dev
 ```
 Storefront will run on: http://localhost:8000
+
+#### Option B: Server/Worker Mode (Production-like Setup)
+
+For testing the production architecture with separate Server and Worker processes:
+
+**Backend Server (Terminal 1):**
+```bash
+cd beauty-shop
+npm run dev
+```
+Handles HTTP requests (API + Admin)
+
+**Backend Worker (Terminal 2):**
+```bash
+cd beauty-shop
+npm run dev:worker
+```
+Processes background jobs and subscribers
+
+**Storefront (Terminal 3):**
+```bash
+cd beauty-shop-storefront
+npm run dev
+```
+
+> **Note:** Worker mode requires Redis. For development without Redis, use Option A.
 
 ## 📁 Project Structure
 
@@ -241,7 +267,9 @@ The project uses three schemas:
 
 ## 🚀 Deployment
 
-### Backend (MedusaJS) - Railway
+### Backend (MedusaJS) - Railway with Server/Worker Architecture
+
+**Architecture:** We deploy MedusaJS with separate Server and Worker services for optimal performance.
 
 **Prerequisites:**
 - Railway account (https://railway.app)
@@ -250,12 +278,35 @@ The project uses three schemas:
 
 **Important: Build Process**
 
-MedusaJS uses a special build process that creates a `.medusa/server` directory. The application **must** be started from this directory in production. The `railway.toml` file is configured to handle this automatically:
+MedusaJS uses a special build process that creates a `.medusa/server` directory. The application **must** be started from this directory in production. Both `railway.toml` and `railway-worker.toml` are configured to handle this automatically:
 
 - **Build Command:** `npm run build:production` (creates `.medusa/server` and installs production dependencies)
-- **Start Command:** `npm run start:production` (runs from `.medusa/server` directory)
+- **Server Start:** `npm run start:production` (HTTP API + Admin)
+- **Worker Start:** `npm run start:production:worker` (Background jobs)
 
 See [MedusaJS Build Documentation](https://docs.medusajs.com/learn/build) for details.
+
+**Deployment Architecture:**
+```
+┌─────────────────────────────────────┐
+│      Railway Project                │
+│                                     │
+│  ┌──────────┐    ┌──────────┐     │
+│  │  Server  │    │  Worker  │     │
+│  │  (HTTP)  │    │  (Jobs)  │     │
+│  └─────┬────┘    └────┬─────┘     │
+│        │              │            │
+│        └──────┬───────┘            │
+│               ▼                    │
+│         ┌─────────┐                │
+│         │  Redis  │                │
+│         └─────────┘                │
+└─────────────────────────────────────┘
+```
+
+**Quick Start:**
+
+> **📘 Full Guide:** See `.project/RAILWAY_SETUP_GUIDE.md` for detailed step-by-step instructions.
 
 **Deployment Steps:**
 
@@ -265,34 +316,40 @@ See [MedusaJS Build Documentation](https://docs.medusajs.com/learn/build) for de
    - Select "Deploy from GitHub repo"
    - Choose `beauty-shop` repository
    - Select `beauty-shop/` directory as root
+   - Rename service to `beauty-shop-server`
 
-2. **Configure Environment Variables:**
-   - Go to Project → Variables
-   - Add all variables from `beauty-shop/.env.example`
-   - Generate secure secrets for `JWT_SECRET` and `COOKIE_SECRET`
-   - Update `ADMIN_CORS` and `AUTH_CORS` with Railway URL
-   - **Important:** Do NOT set `DISABLE_ADMIN=true` (admin panel should work with correct build process)
-
-3. **Add Redis Service:**
+2. **Add Redis Service:**
    - In Railway project, click "+ New"
    - Select "Redis"
    - Railway will auto-generate `REDIS_URL` variable
 
-4. **Deploy:**
-   - Railway will auto-deploy on git push to main
-   - Check deployment logs for errors
-   - Verify health endpoint: `https://[project].railway.app/health`
-   - Admin panel should be accessible at: `https://[project].railway.app/app`
+3. **Configure Server Service:**
+   - Config file: `railway.toml`
+   - Generate public domain
+   - Add all environment variables (see guide)
+   - Set `WORKER_MODE=false`
 
-5. **Create Admin User:**
-   ```bash
-   npx medusa user -e admin@beautyshop.com -p [secure-password]
-   ```
+4. **Create Worker Service:**
+   - Click "+ New" → "GitHub Repo" → same repository
+   - Rename to `beauty-shop-worker`
+   - Config file: `railway-worker.toml`
+   - **Do NOT** generate public domain
+   - Add same environment variables as server
+   - Set `WORKER_MODE=true`
+
+5. **Deploy Both Services:**
+   - Railway will auto-deploy on git push to main
+   - Verify Server logs show: `🌐 SERVER mode`
+   - Verify Worker logs show: `👷 WORKER mode`
+
+6. **Test Worker:**
+   - Create a product in Admin UI
+   - Check Worker logs for event processing
 
 **Production URLs:**
-- Backend API: `https://[project-name].railway.app`
-- Admin Panel: `https://[project-name].railway.app/app`
-- Health Check: `https://[project-name].railway.app/health`
+- Backend API: `https://beauty-shop-server-production.up.railway.app`
+- Admin Panel: `https://beauty-shop-server-production.up.railway.app/app`
+- Health Check: `https://beauty-shop-server-production.up.railway.app/health`
 
 **Troubleshooting:**
 

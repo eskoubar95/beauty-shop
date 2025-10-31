@@ -1,19 +1,42 @@
-// Uncomment this file to enable instrumentation and observability using OpenTelemetry
-// Refer to the docs for installation instructions: https://docs.medusajs.com/learn/debugging-and-testing/instrumentation
+/**
+ * MedusaJS Instrumentation
+ * Logs startup information and mode detection
+ */
 
+export function register() {
+  // Detect if running in worker mode
+  const isWorkerMode = process.argv.includes('--mode=worker') || 
+                       process.env.WORKER_MODE === 'true'
+  
+  const mode = isWorkerMode ? '👷 WORKER' : '🌐 SERVER'
+  const env = process.env.NODE_ENV || 'development'
+  
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  console.log(`🚀 Beauty Shop MedusaJS starting...`)
+  console.log(`   Mode:        ${mode}`)
+  console.log(`   Environment: ${env}`)
+  console.log(`   Node:        ${process.version}`)
+  console.log(`   Redis:       ${process.env.REDIS_URL ? '✅ Connected' : '❌ Not configured'}`)
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
+  if (isWorkerMode) {
+    console.log('📨 Worker mode: Processing background jobs and subscribers')
+  } else {
+    console.log('🌐 Server mode: Handling HTTP requests (API + Admin)')
+  }
+}
+
+// Uncomment below to enable OpenTelemetry instrumentation with Sentry/Zipkin
 // import { registerOtel } from "@medusajs/medusa"
-// // If using an exporter other than Zipkin, require it here.
 // import { ZipkinExporter } from "@opentelemetry/exporter-zipkin"
-
-// // If using an exporter other than Zipkin, initialize it here.
+//
 // const exporter = new ZipkinExporter({
-//   serviceName: 'my-medusa-project',
+//   serviceName: 'beauty-shop',
 // })
-
+//
 // export function register() {
 //   registerOtel({
-//     serviceName: 'medusajs',
-//     // pass exporter
+//     serviceName: 'beauty-shop',
 //     exporter,
 //     instrument: {
 //       http: true,

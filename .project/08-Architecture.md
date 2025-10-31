@@ -322,20 +322,71 @@ NEXT_PUBLIC_DEFAULT_REGION=us
 
 ### 6.1 Production Deployment
 
-**MedusaJS Backend:**
-- **Host:** Railway (chosen per CORE-21)
+**MedusaJS Backend (Railway - Server/Worker Architecture):**
+
+**Architecture Overview:**
+```
+┌──────────────────────────────────────────────┐
+│          RAILWAY PROJECT                     │
+│                                              │
+│  ┌─────────────────┐  ┌─────────────────┐  │
+│  │ Server Service  │  │ Worker Service  │  │
+│  │                 │  │                 │  │
+│  │ HTTP API        │  │ Background Jobs │  │
+│  │ + Admin UI      │  │ + Subscribers   │  │
+│  │ Port: 9000      │  │ No HTTP         │  │
+│  │ Public URL ✅   │  │ Internal only   │  │
+│  └────────┬────────┘  └────────┬────────┘  │
+│           │                     │           │
+│           └──────┬──────────────┘           │
+│                  ▼                           │
+│           ┌─────────────┐                   │
+│           │   Redis     │                   │
+│           │  (Plugin)   │                   │
+│           └─────────────┘                   │
+└──────────────────────────────────────────────┘
+```
+
+**Server Service:**
+- **Host:** Railway
+- **Mode:** Server (handles HTTP requests)
 - **Port:** 9000 (local), auto-assigned (production)
-- **URL:** `https://[project-name].railway.app` (Railway auto-generated)
-- **Admin:** `https://[project-name].railway.app/app`
+- **URL:** `https://beauty-shop-server-production.up.railway.app`
+- **Admin:** `https://beauty-shop-server-production.up.railway.app/app`
+- **Start Command:** `yarn start:production`
+- **Health Check:** `/health`
+
+**Worker Service:**
+- **Host:** Railway (same project)
+- **Mode:** Worker (processes background jobs)
+- **No Public URL:** Internal processing only
+- **Start Command:** `yarn start:production:worker`
+- **Processes:** Subscribers, async jobs, email notifications
+
+**Redis (Event Bus):**
+- **Host:** Railway Plugin
+- **Purpose:** Coordinates events between Server and Worker
+- **Required:** ✅ Critical for worker mode
+
+**Benefits:**
+- ✅ Server focuses on HTTP requests only
+- ✅ Worker handles heavy/async processing
+- ✅ Independent scaling
+- ✅ Better resource utilization
+- ✅ Improved reliability
 
 **Next.js Storefront:**
-- **Host:** Vercel (planned)
+- **Host:** Vercel
 - **URL:** `https://beautyshop.com` (planned)
+- **Edge Network:** Global CDN for optimal performance
+- **Preview Deployments:** Automatic per PR
 
 **Supabase Database:**
 - **Host:** Supabase (managed)
 - **Region:** eu-west-1
 - **Connection:** Transaction Pooler for production
+
+**Deployment Guide:** See `.project/RAILWAY_SETUP_GUIDE.md` for detailed setup instructions.
 
 ---
 
@@ -375,6 +426,51 @@ NEXT_PUBLIC_DEFAULT_REGION=us
 # Transaction Pooler (port 6543) - for short-lived connections (recommended)
 DATABASE_URL=postgresql://postgres.xxx:***@aws-1-eu-west-1.pooler.supabase.com:6543/postgres
 ```
+
+---
+
+### 7.3 Why Server/Worker Separation?
+
+**Decision:** Implement separate Server and Worker processes from day one.
+
+**Rationale:**
+1. **Best Practice:** MedusaJS recommends this for production deployments
+2. **Performance:** HTTP requests not blocked by heavy background jobs
+3. **Scalability:** Can scale Server and Worker independently
+4. **Reliability:** Worker crashes don't affect API availability
+5. **Resource Optimization:** Better CPU/memory allocation
+
+**Implementation:**
+
+```bash
+# Development (separate terminals)
+Terminal 1: npm run dev          # Server mode
+Terminal 2: npm run dev:worker   # Worker mode
+
+# Production (Railway)
+Service 1: yarn start:production          # Server
+Service 2: yarn start:production:worker   # Worker
+```
+
+**What runs where:**
+
+| Component | Server | Worker |
+|-----------|--------|--------|
+| HTTP API | ✅ | ❌ |
+| Admin UI | ✅ | ❌ |
+| Subscribers | ❌ | ✅ |
+| Background Jobs | ❌ | ✅ |
+| Email Sending | ❌ | ✅ |
+| Image Processing | ❌ | ✅ |
+| Webhooks | ❌ | ✅ |
+
+**Requirements:**
+- ✅ Redis Event Bus (critical)
+- ✅ Same database connection for both
+- ✅ Same environment variables
+- ✅ Different start commands
+
+**Cost:** No extra cost - uses same Hobby Plan resources more efficiently.
 
 ---
 
