@@ -177,6 +177,7 @@ The key lesson is: **follow the framework, don't fight it**. MedusaJS provides e
 
 The simple architecture (two directories, proper environment setup, official tools) is much better than the complex monorepo we initially attempted.
 
+<<<<<<< HEAD
 ---
 
 # Lessons Learned - CORE-21
@@ -319,3 +320,5 @@ Connection to Redis in module 'event-bus-redis' established
 
 ---
 
+=======
+>>>>>>> origin/main

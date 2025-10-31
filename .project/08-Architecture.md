@@ -322,6 +322,7 @@ NEXT_PUBLIC_DEFAULT_REGION=us
 
 ### 6.1 Production Deployment
 
+<<<<<<< HEAD
 **MedusaJS Backend (Railway - Server/Worker Architecture):**
 
 **Architecture Overview:**
@@ -380,14 +381,28 @@ NEXT_PUBLIC_DEFAULT_REGION=us
 - **URL:** `https://beautyshop.com` (planned)
 - **Edge Network:** Global CDN for optimal performance
 - **Preview Deployments:** Automatic per PR
+=======
+**MedusaJS Backend:**
+- **Host:** Render or Railway (planned)
+- **Port:** 9000
+- **URL:** `https://api.beautyshop.com` (planned)
+- **Admin:** `https://api.beautyshop.com/app`
+
+**Next.js Storefront:**
+- **Host:** Vercel (planned)
+- **URL:** `https://beautyshop.com` (planned)
+>>>>>>> origin/main
 
 **Supabase Database:**
 - **Host:** Supabase (managed)
 - **Region:** eu-west-1
 - **Connection:** Transaction Pooler for production
 
+<<<<<<< HEAD
 **Deployment Guide:** See `.project/RAILWAY_SETUP_GUIDE.md` for detailed setup instructions.
 
+=======
+>>>>>>> origin/main
 ---
 
 ## 7. Architecture Decisions
@@ -429,6 +444,7 @@ DATABASE_URL=postgresql://postgres.xxx:***@aws-1-eu-west-1.pooler.supabase.com:6
 
 ---
 
+<<<<<<< HEAD
 ### 7.3 Why Server/Worker Separation?
 
 **Decision:** Implement separate Server and Worker processes from day one.
@@ -474,6 +490,8 @@ Service 2: yarn start:production:worker   # Worker
 
 ---
 
+=======
+>>>>>>> origin/main
 ## 8. Security Architecture
 
 ### 8.1 Authentication Flow (Planned)
