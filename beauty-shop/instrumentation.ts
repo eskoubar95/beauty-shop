@@ -4,10 +4,15 @@
  */
 
 export function register() {
-  // Detect if running in worker mode
-  const isWorkerMode = process.argv.includes('--mode=worker') || 
-                       process.env.WORKER_MODE === 'true'
+  // Detect if running in cluster mode with workers only
+  const hasCluster = process.argv.includes('--cluster')
+  const serversArg = process.argv.find(arg => arg.startsWith('--servers='))
+  const workersArg = process.argv.find(arg => arg.startsWith('--workers='))
   
+  const servers = serversArg ? parseInt(serversArg.split('=')[1]) : 1
+  const workers = workersArg ? parseInt(workersArg.split('=')[1]) : 0
+  
+  const isWorkerMode = hasCluster && servers === 0 && workers > 0
   const mode = isWorkerMode ? '👷 WORKER' : '🌐 SERVER'
   const env = process.env.NODE_ENV || 'development'
   
@@ -17,6 +22,9 @@ export function register() {
   console.log(`   Environment: ${env}`)
   console.log(`   Node:        ${process.version}`)
   console.log(`   Redis:       ${process.env.REDIS_URL ? '✅ Connected' : '❌ Not configured'}`)
+  if (hasCluster) {
+    console.log(`   Cluster:     Servers=${servers}, Workers=${workers}`)
+  }
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
   if (isWorkerMode) {

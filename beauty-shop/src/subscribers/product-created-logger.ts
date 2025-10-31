@@ -10,7 +10,12 @@ export default async function productCreatedLogger({
   event, 
   container 
 }: SubscriberArgs<{ id: string }>) {
-  const mode = process.argv.includes('--mode=worker') ? 'WORKER' : 'SERVER'
+  // Detect cluster mode
+  const hasCluster = process.argv.includes('--cluster')
+  const serversArg = process.argv.find(arg => arg.startsWith('--servers='))
+  const servers = serversArg ? parseInt(serversArg.split('=')[1]) : 1
+  const mode = (hasCluster && servers === 0) ? 'WORKER' : 'SERVER'
+  
   const productId = event.data.id
   
   console.log(`📦 [${mode}] Product created event received`)
