@@ -177,3 +177,145 @@ The key lesson is: **follow the framework, don't fight it**. MedusaJS provides e
 
 The simple architecture (two directories, proper environment setup, official tools) is much better than the complex monorepo we initially attempted.
 
+---
+
+# Lessons Learned - CORE-21
+
+**Date:** 2025-10-31
+**Issue:** CORE-21 - Deploy MedusaJS Backend to Railway
+
+## MedusaJS Server/Worker Separation
+
+### Key Learning: Redis Event Bus Warning is Expected
+
+**Problem:**
+When deploying MedusaJS with Redis Event Bus, the logs show a misleading warning:
+```
+⚠️ Local Event Bus installed. This is not recommended for production.
+```
+
+**Solution:**
+This warning is **expected behavior** and can be ignored when Redis Event Bus is properly configured.
+
+**How it works:**
+1. MedusaJS first initializes Local Event Bus as a fallback
+2. Logs the warning (misleading, but harmless)
+3. Then establishes connection to Redis Event Bus
+4. Redis Event Bus takes over for actual event handling
+
+**Verification:**
+After the warning, you should see:
+```
+✅ Connection to Redis in module 'event-bus-redis' established
+```
+
+This confirms Redis Event Bus is actually being used, despite the earlier warning.
+
+### Correct Railway Configuration
+
+**Server Service (`railway.toml`):**
+```toml
+[build]
+builder = "NIXPACKS"
+buildCommand = "yarn build:production"
+
+[deploy]
+startCommand = "yarn start:production"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+```
+
+**Worker Service (`railway-worker.toml`):**
+```toml
+[build]
+builder = "NIXPACKS"
+buildCommand = "yarn build:production"
+
+[deploy]
+startCommand = "yarn start:production:worker"
+# No healthcheck needed for workers
+```
+
+**Important:** Railway does **not** support `restartPolicyType` or `restartPolicyMaxRetries` in configuration files.
+
+### Cluster Mode Arguments
+
+**DO NOT USE:**
+```bash
+--mode=worker  # ❌ This flag does not exist
+```
+
+**USE INSTEAD:**
+```bash
+--cluster --servers=0 --workers=1  # ✅ Correct cluster mode syntax
+```
+
+**package.json scripts:**
+```json
+{
+  "start:production": "cd .medusa/server && NODE_ENV=production yarn start",
+  "start:production:worker": "cd .medusa/server && NODE_ENV=production yarn start --cluster --servers=0 --workers=1"
+}
+```
+
+### Environment Variables
+
+**Both services need:**
+- `REDIS_URL` - Same Redis instance for event communication
+- `DATABASE_URL` - With `?pgbouncer=true&connection_limit=1` for Supabase
+- All standard MedusaJS env vars
+
+**Example REDIS_URL:**
+```
+redis://default:password@redis.railway.internal:6379
+```
+
+### Verification Checklist
+
+After deployment, verify logs show:
+
+**Server Service:**
+```
+Mode:        🌐 SERVER
+Connection to Redis in module 'event-bus-redis' established
+Server is ready on port: 8080
+```
+
+**Worker Service:**
+```
+Mode:        👷 WORKER
+Cluster:     Servers=0, Workers=1
+Connection to Redis in module 'event-bus-redis' established
+```
+
+## Key Learnings
+
+### 1. Don't Panic at Redis Event Bus Warning
+- ✅ Warning is expected during initialization
+- ✅ Check for "Connection established" message after
+- ✅ Redis Event Bus will override Local Event Bus
+
+### 2. Railway Configuration Limitations
+- ✅ No `restartPolicyType` support
+- ✅ Use Railway's built-in restart policies
+- ✅ Simple configuration is better
+
+### 3. MedusaJS Cluster Mode
+- ✅ Use `--cluster` flag for worker processes
+- ✅ Control servers/workers with `--servers=N --workers=M`
+- ✅ No `--mode` flag exists
+
+### 4. Separate Services for Scale
+- ✅ Server handles HTTP (can scale horizontally)
+- ✅ Worker handles background jobs (can scale independently)
+- ✅ Both communicate via Redis Event Bus
+
+## Resources
+
+- [MedusaJS Event Bus - Local](https://docs.medusajs.com/resources/infrastructure-modules/event/local)
+- [MedusaJS Event Bus - Redis](https://docs.medusajs.com/resources/infrastructure-modules/event/redis)
+- [Railway Configuration](https://docs.railway.app/reference/config-as-code)
+- [MedusaJS CLI Reference](https://docs.medusajs.com/resources/references/cli)
+
+---
+

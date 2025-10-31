@@ -206,12 +206,13 @@ buildCommand = "yarn build:production"
 startCommand = "yarn start:production"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
-restartPolicyType = "on-failure"
 
 [deploy.environmentVariables]
 WORKER_MODE = "false"
 NODE_ENV = "production"
 ```
+
+> **Note:** Railway does NOT support `restartPolicyType` in config files. Use Railway's built-in restart policies instead.
 
 ### `railway-worker.toml` (Worker)
 ```toml
@@ -222,13 +223,13 @@ buildCommand = "yarn build:production"
 
 [deploy]
 startCommand = "yarn start:production:worker"
-restartPolicyType = "on-failure"
-restartPolicyMaxRetries = 10
 
 [deploy.environmentVariables]
 WORKER_MODE = "true"
 NODE_ENV = "production"
 ```
+
+> **Note:** Workers don't need healthcheck paths since they don't run HTTP servers.
 
 ---
 
@@ -261,6 +262,26 @@ NODE_ENV = "production"
 ---
 
 ## 🚨 Troubleshooting
+
+### ⚠️ "Local Event Bus installed" Warning (SAFE TO IGNORE)
+**Problem:** Logs viser `Local Event Bus installed. This is not recommended for production.`
+
+**Solution:** Dette er **forventet adfærd** og kan ignoreres! 
+
+**Hvorfor?**
+1. MedusaJS initialiserer Local Event Bus som fallback først
+2. Logger advarslen (misvisende, men harmløs)
+3. Etablerer derefter forbindelse til Redis Event Bus
+4. Redis Event Bus overtager for faktisk event håndtering
+
+**Verifikation:**
+Kig efter denne linje efter advarslen:
+```
+✅ Connection to Redis in module 'event-bus-redis' established
+```
+Hvis du ser denne, bruger systemet Redis Event Bus korrekt! 🎉
+
+---
 
 ### Worker not processing events?
 - ✅ Check `REDIS_URL` er sat på både Server og Worker
