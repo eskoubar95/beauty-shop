@@ -25,7 +25,10 @@ async function getRegionMap(cacheId: string) {
   ) {
     // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
     try {
-      const response = await fetch(`${BACKEND_URL}/store/regions`, {
+      // Normalize BACKEND_URL to prevent double slashes
+      const normalizedBackendUrl = BACKEND_URL.endsWith('/') ? BACKEND_URL.slice(0, -1) : BACKEND_URL
+      
+      const response = await fetch(`${normalizedBackendUrl}/store/regions`, {
         headers: {
           "x-publishable-api-key": PUBLISHABLE_API_KEY!,
         },
