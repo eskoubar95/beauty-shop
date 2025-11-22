@@ -3,10 +3,8 @@
  * Centralized fetch helper for Strapi REST API calls
  */
 
-// Normalize Strapi URL (remove trailing slash to avoid double slashes)
-const STRAPI_URL = (
-  process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"
-).replace(/\/$/, ""); // Remove trailing slash
+const STRAPI_URL =
+  process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN; // optional
 
@@ -17,9 +15,7 @@ const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN; // optional
  * @returns Promise with typed response
  */
 async function fetchFromStrapi<T>(path: string, init?: RequestInit): Promise<T> {
-  // Ensure path starts with / for proper URL construction
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = new URL(normalizedPath, STRAPI_URL).toString();
+  const url = new URL(path, STRAPI_URL).toString();
 
   const headers: HeadersInit = {
     "Content-Type": "application/json",
