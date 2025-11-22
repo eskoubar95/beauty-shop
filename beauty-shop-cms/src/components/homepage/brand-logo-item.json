@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_homepage_brand_logo_items",
+  "info": {
+    "displayName": "Brand Logo Item",
+    "singularName": "brand-logo-item",
+    "pluralName": "brand-logo-items",
+    "description": "Single brand logo with optional link"
+  },
+  "options": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "link": {
+      "type": "string",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    }
+  }
+}

@@ -49,6 +49,35 @@
   }
 }
 
+@layer base {
+  html,
+  body {
+    @apply overflow-x-hidden;
+  }
+
+  body.guapo-menu-open [data-mobile-cart="true"] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .marquee {
+    animation: marquee 25s linear infinite;
+  }
+
+  .marquee:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+}
+
 @layer components {
   .content-container {
     @apply max-w-[1440px] w-full mx-auto px-6;

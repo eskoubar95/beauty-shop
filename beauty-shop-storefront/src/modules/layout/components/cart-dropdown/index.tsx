@@ -16,6 +16,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
+import { ShoppingBag } from "lucide-react"
 
 const CartDropdown = ({
   cart: cartState,
@@ -75,17 +76,30 @@ const CartDropdown = ({
 
   return (
     <div
-      className="h-full z-50"
+      className="z-50 h-full hidden lg:block"
       onMouseEnter={openAndCancel}
       onMouseLeave={close}
     >
       <Popover className="relative h-full">
-        <PopoverButton className="h-full">
-          <LocalizedClientLink
-            className="hover:text-ui-fg-base"
-            href="/cart"
-            data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
+        <PopoverButton
+          as={LocalizedClientLink}
+          href="/cart"
+          data-testid="nav-cart-link"
+          aria-label={`Åbn kurv (${totalItems} vare${totalItems === 1 ? "" : "r"})`}
+          className="group relative inline-flex h-10 w-10 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker lg:h-11 lg:w-11"
+        >
+          <ShoppingBag
+            className="h-5 w-5 transition-transform duration-200 group-hover:scale-110"
+            aria-hidden="true"
+          />
+          <span
+            aria-live="polite"
+            role="status"
+            className="absolute -right-1 -top-1 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-badge font-semibold leading-none text-white"
+          >
+            <span className="sr-only">Antal varer i kurv: </span>
+            {totalItems}
+          </span>
         </PopoverButton>
         <Transition
           show={cartDropdownOpen}
@@ -99,7 +113,7 @@ const CartDropdown = ({
         >
           <PopoverPanel
             static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
+            className="absolute top-[calc(100%+32px)] right-0 w-[420px] border border-gray-200 bg-white text-ui-fg-base shadow-dropdown"
             data-testid="nav-cart-dropdown"
           >
             <div className="p-4 flex items-center justify-center">

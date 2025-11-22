@@ -1,0 +1,47 @@
+{
+  "collectionName": "components_homepage_brand_logos_sections",
+  "info": {
+    "displayName": "Brand Logos Section",
+    "singularName": "brand-logos-section",
+    "pluralName": "brand-logos-sections",
+    "description": "Section displaying brand logos in a row"
+  },
+  "options": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "internalLabel": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "maxLength": 255,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "logos": {
+      "type": "component",
+      "repeatable": true,
+      "component": "homepage.brand-logo-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

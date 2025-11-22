@@ -1,35 +1,44 @@
-import { Github } from "@medusajs/icons"
-import { Button, Heading } from "@medusajs/ui"
+import Image from "next/image"
+import type { HeroContent } from "@lib/types/homepage"
+import { Button } from "@components/ui/button"
 
-const Hero = () => {
+interface HeroProps {
+  content: HeroContent
+}
+
+const Hero = ({ content }: HeroProps) => {
   return (
-    <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
-      <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-6">
-        <span>
-          <Heading
-            level="h1"
-            className="text-3xl leading-10 text-ui-fg-base font-normal"
-          >
-            Ecommerce Starter Template
-          </Heading>
-          <Heading
-            level="h2"
-            className="text-3xl leading-10 text-ui-fg-subtle font-normal"
-          >
-            Powered by Medusa and Next.js
-          </Heading>
-        </span>
-        <a
-          href="https://github.com/medusajs/nextjs-starter-medusa"
-          target="_blank"
-        >
-          <Button variant="secondary">
-            View on GitHub
-            <Github />
-          </Button>
-        </a>
+    <section className="relative isolate h-[520px] w-full overflow-hidden sm:h-[600px] lg:h-[700px]">
+      <div className="absolute inset-0 -z-10">
+        {content.imageUrl ? (
+          <Image
+            src={content.imageUrl}
+            alt={content.imageAlt ?? "GUAPO hero baggrund"}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        ) : (
+          <div className="h-full w-full bg-gray-light" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-black/0 to-black/10 lg:bg-gradient-to-r lg:from-black/15 lg:via-black/0 lg:to-black/5" />
       </div>
-    </div>
+
+      <div className="relative mx-auto flex h-full w-full max-w-[1440px] items-end justify-start px-4 pb-0 sm:px-8 sm:pb-10 lg:px-16 lg:pb-14">
+        <div className="max-w-[500px] border border-white bg-white p-7 shadow-hero sm:p-9 lg:max-w-[520px] lg:p-12">
+          <h1 className="font-semibold text-heading-1-mobile sm:text-heading-1-tablet lg:text-heading-1-desktop text-primary-darker">
+            {content.title}
+          </h1>
+          <p className="mt-4 text-base sm:text-body-large lg:text-body-large leading-relaxed text-primary-light/80">
+            {content.body}
+          </p>
+          <Button variant="default" size="lg" className="mt-8">
+            {content.ctaText}
+          </Button>
+        </div>
+      </div>
+    </section>
   )
 }
 

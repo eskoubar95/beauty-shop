@@ -2,7 +2,7 @@
 
 Reusable AI prompts for Beauty Shop development workflows. Type `/` in Cursor AI chat to access any command.
 
-**Total:** 36 commands (19 original + 17 new)
+**Total:** 42 commands (19 original + 17 new + 5 design + 1 feature)
 
 ## 🆕 NEW: Plan-Based Development Workflow
 
@@ -25,6 +25,7 @@ For large features (>400 LOC), see **[PLAN-BASED-WORKFLOW.md](./PLAN-BASED-WORKF
 - `/postgres-migration-rls` - Database migration + RLS policies
 - `/feature-flags` - Setup/gate feature with LaunchDarkly
 - `/sentry-instrumentation` - Add Sentry monitoring (errors, breadcrumbs)
+- `/feature-adapt-inspiration` - 🆕 Reverse engineer external feature & create blueprint (Playwright)
 
 ### Testing & Quality
 - `/write-unit-tests` - Generate comprehensive unit tests
@@ -33,6 +34,13 @@ For large features (>400 LOC), see **[PLAN-BASED-WORKFLOW.md](./PLAN-BASED-WORKF
 - `/code-review` - Comprehensive PR review checklist
 - `/accessibility-audit` - WCAG 2.1 AA compliance check
 - `/security-audit` - Security vulnerability scan
+
+### Design & Visual Quality (🆕 Playwright MCP)
+- `/design-audit` - Extract design system via AI visual analysis (Playwright screenshots)
+- `/design-consistency-fix` - Fix design inconsistencies with visual verification
+- `/design-review` - Review component/page with Playwright + AI visual analysis
+- `/design-optimize` - Iterative visual optimization with screenshot feedback loop
+- `/design-adapt-inspiration` - Extract patterns from inspiration site & adapt to your component
 
 ### Debugging & Optimization
 - `/debug-issue` - Systematic debugging workflow
@@ -212,6 +220,62 @@ Context: Order ID, payment status (no card details)
 
 ---
 
+#### `/feature-adapt-inspiration`
+Reverse engineer external feature and create concrete implementation blueprint.
+
+**When to use:**
+- Found great feature in external system (Shopify, SaaS admin, workflow tool)
+- Want to adapt it to Beauty Shop (Medusa/Strapi/Storefront)
+- Need structured specification without manual documentation
+- Want to skip tedious "describe every field/button/flow" work
+
+**Uses:**
+- **Playwright MCP** to explore and screenshot external system
+- **AI analysis** to reverse engineer data models, flows, business logic
+- Maps to Beauty Shop architecture (Medusa backend, Strapi plugin, or Next.js)
+- Generates complete Feature Blueprint ready for implementation
+
+**Delivers:**
+- Pattern extraction (entities, fields, relationships, flows)
+- Complete Feature Blueprint markdown:
+  - Problem & value proposition
+  - Domain model + data model
+  - User flows (step-by-step with edge cases)
+  - UX specifications (lists, forms, detail views)
+  - Business logic & rules
+  - Implementation guide for target system
+  - Risks, open questions, acceptance criteria
+- Screenshots reference (7-10 views)
+- Next steps (research → plan → Linear issue)
+
+**Example:**
+```
+/feature-adapt-inspiration
+
+URL: https://shopify.com/admin/purchase-orders
+Feature: Purchase Order System
+Why: Great flow for managing inventory purchases
+Target: medusa-backend
+Flows: Create PO, Approve, Receive stock
+
+Playwright: Screenshots 7 views (list, detail, forms, flows)
+AI Analysis: Extracts:
+- Entities: PurchaseOrder, PurchaseOrderLine, Supplier
+- Status flow: draft → submitted → approved → received
+- 15 fields with types and validations
+- 3 core user flows with edge cases
+
+Blueprint Generated:
+- 600+ line structured specification
+- Ready for /research-feature-patterns
+- Then /create-implementation-plan
+- Then /create-linear-issue
+
+Estimate: 6-9 days implementation
+```
+
+---
+
 ### ✅ Testing & Quality
 
 #### `/write-unit-tests`
@@ -370,6 +434,207 @@ Security vulnerability scan for e-commerce platform.
 Feature: Payment processing with Stripe
 Check: No card storage, webhook verification, amount validation,
 no sensitive data in logs/errors.
+```
+
+---
+
+### 🎨 Design & Visual Quality (Playwright MCP)
+
+#### `/design-audit`
+Extract design system from existing codebase through visual analysis.
+
+**When to use:**
+- Starting UI standardization
+- Need to document current design patterns
+- Want to create `.design-standards.md`
+- Identifying inconsistencies across components
+
+**Uses:**
+- **Playwright MCP** to capture screenshots of all components
+- **AI visual analysis** to analyze spacing, colors, typography, shadows
+- Code correlation to match visual patterns to Tailwind classes
+
+**Delivers:**
+- Screenshot archive (desktop + mobile)
+- `.design-standards.md` documenting:
+  - Color palette (extracted from renders)
+  - Spacing scale (8px base)
+  - Typography hierarchy
+  - Shadow tokens
+  - Border radius patterns
+- Inconsistencies report (hardcoded values, off-scale spacing, etc.)
+
+**Example:**
+```
+/design-audit
+
+Analyzes homepage components with Playwright:
+- Screenshots Hero, ProductCard, StepCard, etc.
+- Extracts colors, spacing, typography from visual renders
+- Documents patterns in .design-standards.md
+- Lists inconsistencies (hardcoded #08152D, px-10, custom shadows)
+```
+
+---
+
+#### `/design-consistency-fix`
+Fix design inconsistencies with before/after visual verification.
+
+**When to use:**
+- After running `/design-audit`
+- Need to standardize hardcoded values
+- Want to replace custom shadows/colors with theme tokens
+- Fix off-scale spacing
+
+**Uses:**
+- **Playwright MCP** to capture before/after screenshots
+- **AI visual analysis** to verify no visual regressions
+- Iterative: Apply fixes → Screenshot → Compare → Adjust
+
+**Delivers:**
+- Updated `tailwind.config.js` with new tokens
+- Components updated (hardcoded → theme tokens)
+- Visual comparison report (before/after screenshots)
+- Confirmation of no visual regressions
+
+**Example:**
+```
+/design-consistency-fix
+
+Based on design-audit findings:
+1. Screenshots baseline (before changes)
+2. Updates tailwind.config.js (adds color/shadow tokens)
+3. Replaces bg-[#08152D] → bg-primary-darker
+4. Replaces shadow-[0_28px...] → shadow-hero
+5. Screenshots after changes
+6. Compares visually (no regressions)
+```
+
+---
+
+#### `/design-review`
+Review component/page against design standards using visual analysis.
+
+**When to use:**
+- New component/page built
+- Polishing existing UI
+- Want objective design feedback
+- Ensuring consistency with brand
+
+**Uses:**
+- **Playwright MCP** to screenshot component (desktop + mobile)
+- **AI visual analysis** to analyze spacing, typography, colors, balance
+- Comparison with reference components (Hero, ProductCard)
+- Optional: Compare with industry inspiration (Linear, Aesop, Glossier)
+
+**Delivers:**
+- Visual analysis report (what looks good, what's off)
+- Critical issues with file:line + concrete fixes
+- Score (X/10) with breakdown
+- Comparison with reference components
+- Next steps (priority order for fixes)
+
+**Example:**
+```
+/design-review About page
+
+Playwright screenshots About page (desktop + mobile)
+AI visual analysis:
+- ❌ Hero padding too tight (py-12 → py-24)
+- ❌ Inconsistent gaps (gap-6 and gap-12 mixed)
+- ✅ Color usage correct
+- 💭 Add more breathing room around CTA
+Score: 6/10
+Suggests: Apply spacing fixes, then run /design-optimize
+```
+
+---
+
+#### `/design-optimize`
+Iterative visual optimization with Playwright feedback loop.
+
+**When to use:**
+- Component "feels off" but unclear why
+- Want to achieve "premium" aesthetic
+- Need iterative polish with visual feedback
+- Goal: Reach 9/10 design quality
+
+**Uses:**
+- **Playwright MCP** for iterative screenshots
+- **AI visual analysis** to analyze each iteration
+- Multiple cycles: Adjust → Screenshot → Compare → Refine
+- Optional: Analyze inspiration sites for patterns
+
+**Delivers:**
+- Screenshot progression (iteration-1, iteration-2, etc.)
+- Optimization log (what changed, why, impact)
+- Final code changes with reasoning
+- Visual comparison (before vs. after)
+- Score improvement (e.g., 5/10 → 9/10)
+
+**Example:**
+```
+/design-optimize TestimonialSection - feels cramped
+
+Iteration 1: Screenshots baseline
+- Analysis: py-12 too tight, gap-4 too close
+- Changes: py-12 → py-24, gap-4 → gap-12
+- Score: 5/10 → 7/10
+
+Iteration 2: Refine
+- Analysis: Desktop gap could be larger
+- Changes: gap-12 → gap-16 on lg
+- Score: 7/10 → 9/10 ✅
+
+Goal achieved! Feels spacious and premium.
+```
+
+---
+
+#### `/design-adapt-inspiration`
+Extract design patterns from inspiration site and adapt to your component.
+
+**When to use:**
+- Found design you like (Linear, Notion, Aesop, etc.)
+- Want specific pattern (colors, spacing, card design)
+- Need concrete implementation guidance
+- Want multiple adaptation alternatives
+
+**Uses:**
+- **Playwright MCP** to screenshot inspiration site
+- **AI visual analysis** to extract specific patterns
+- Compares with your existing code
+- Validates against Beauty Shop brand constraints
+- Provides 3 options: Conservative, Bold, Full Reimagination
+
+**Delivers:**
+- Pattern extraction (colors, spacing, typography, shadows)
+- 3 adaptation alternatives with trade-offs
+- Concrete Tailwind class changes
+- Brand constraint validation
+- Implementation guidance
+
+**Example:**
+```
+/design-adapt-inspiration
+
+URL: https://linear.app
+Pattern: Card design and spacing
+Target: src/components/TestimonialCard.tsx
+Goal: Make testimonials feel polished like Linear
+
+Playwright: Screenshots Linear cards
+AI Analysis: Extracts:
+- Padding: 24px vs your 16px
+- Border: 1px subtle vs your heavy shadow
+- Gap: 12px consistent vs your 8px mixed
+
+Options:
+1. Conservative: p-4 → p-6, add border, shadow-sm
+2. Bold: + subtle bg, refined hover states
+3. Full: Restructure card component
+
+Recommendation: Option 1 (80% improvement, low risk)
 ```
 
 ---

@@ -73,7 +73,12 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
             : undefined
         }
       >
-        <ListboxButton className="py-1 w-full">
+        <ListboxButton
+          className="w-full py-1"
+          onClick={toggleState.toggle}
+          onFocus={toggleState.open}
+          onBlur={toggleState.close}
+        >
           <div className="txt-compact-small flex items-start gap-x-2">
             <span>Shipping to:</span>
             {current && (

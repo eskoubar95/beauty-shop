@@ -1,4 +1,5 @@
 const checkEnvVariables = require("./check-env-variables")
+const path = require("path")
 
 // Note: Env variable check runs at build time, not Edge runtime
 // This prevents deployment if vars missing, but won't catch runtime issues
@@ -43,6 +44,16 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
+      },
+      // Strapi CMS images (local and production)
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "1337",
+      },
+      {
+        protocol: "https",
+        hostname: "*.railway.app", // Railway Strapi deployment
       },
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [

@@ -1,0 +1,9 @@
+# Railway Configuration for Strapi CMS
+# This service handles CMS content management
+
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm run start"
+

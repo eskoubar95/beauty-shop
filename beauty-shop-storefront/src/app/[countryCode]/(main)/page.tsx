@@ -1,14 +1,25 @@
 import { Metadata } from "next"
 
-import FeaturedProducts from "@modules/home/components/featured-products"
-import Hero from "@modules/home/components/hero"
-import { listCollections } from "@lib/data/collections"
+import HomeTemplate from "@modules/home/templates"
 import { getRegion } from "@lib/data/regions"
+import { getHomepage } from "@lib/data/cms/pages"
+import { getLocaleFromCountryCode } from "@lib/utils/locale"
 
-export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
-  description:
-    "A performant frontend ecommerce starter template with Next.js 15 and Medusa.",
+// ISR: Revalidate homepage every 60 seconds to pick up changes from Strapi
+export const revalidate = 60
+
+// Generate metadata from Strapi (single source of truth)
+export async function generateMetadata(props: {
+  params: Promise<{ countryCode: string }>
+}): Promise<Metadata> {
+  const params = await props.params
+  const locale = getLocaleFromCountryCode(params.countryCode)
+  const page = await getHomepage(locale)
+  
+  return {
+    title: page?.seo?.metaTitle || "GUAPO - Hudpleje, der virker. Leveret til dig.",
+    description: page?.seo?.metaDescription || "Få koreansk hudpleje direkte i din postkasse. Vi samler de bedste produkter og leverer dem til dig hver måned.",
+  }
 }
 
 export default async function Home(props: {
@@ -19,23 +30,33 @@ export default async function Home(props: {
   const { countryCode } = params
 
   const region = await getRegion(countryCode)
-
-  const { collections } = await listCollections({
-    fields: "id, handle, title",
-  })
-
-  if (!collections || !region) {
+  if (!region) {
     return null
   }
 
-  return (
-    <>
-      <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
-        </ul>
-      </div>
-    </>
-  )
+  // Get locale from country code for Strapi i18n
+  const locale = getLocaleFromCountryCode(countryCode)
+
+  // Strapi is single source of truth - fetch homepage directly with locale
+  const page = await getHomepage(locale)
+  
+  // Graceful error handling: Show placeholder if Strapi content is missing
+  // This prevents the site from crashing if homepage is deleted/unpublished in Strapi
+  if (!page) {
+    return (
+      <main>
+        <div className="content-container py-12">
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold mb-4">Homepage under vedligeholdelse</h1>
+            <p className="text-gray-600">
+              Homepage indhold er ikke tilgængeligt i øjeblikket. Kontakt support hvis problemet fortsætter.
+            </p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  return <HomeTemplate page={page} region={region} />
 }
+

@@ -1,0 +1,10 @@
+# Playwright screenshots directory
+
+This directory stores screenshots captured by Playwright MCP during design commands.
+
+Structure:
+- baseline/ - Initial baseline screenshots
+- before/ - Before consistency fixes
+- after/ - After consistency fixes  
+- optimization/ - Iterative optimization screenshots
+

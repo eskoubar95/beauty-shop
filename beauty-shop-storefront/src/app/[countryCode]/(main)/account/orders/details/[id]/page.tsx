@@ -1,0 +1,41 @@
+import { retrieveOrder } from "@lib/data/orders"
+import OrderDetailsTemplate from "@modules/order/templates/order-details-template"
+import { Metadata } from "next"
+import { notFound, redirect } from "next/navigation"
+import { retrieveCustomer } from "@lib/data/customer"
+
+type Props = {
+  params: Promise<{ id: string }>
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params
+  const order = await retrieveOrder(params.id).catch(() => null)
+
+  if (!order) {
+    notFound()
+  }
+
+  return {
+    title: `Order #${order.display_id}`,
+    description: `View your order`,
+  }
+}
+
+export default async function OrderDetailPage(props: Props) {
+  const customer = await retrieveCustomer().catch(() => null)
+  
+  if (!customer) {
+    redirect("/account/login")
+  }
+
+  const params = await props.params
+  const order = await retrieveOrder(params.id).catch(() => null)
+
+  if (!order) {
+    notFound()
+  }
+
+  return <OrderDetailsTemplate order={order} />
+}
+
