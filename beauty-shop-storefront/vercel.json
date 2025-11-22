@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd beauty-shop-storefront && npm run build",
+  "outputDirectory": "beauty-shop-storefront/.next",
+  "framework": "nextjs",
+  "installCommand": "cd beauty-shop-storefront && npm install",
+  "devCommand": "cd beauty-shop-storefront && npm run dev",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./beauty-shop-storefront"
+}
+
