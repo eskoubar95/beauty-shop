@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs", "yarn"]
+nixPkgs = ["nodejs-20", "yarn"]
 
 [phases.install]
 cmds = ["yarn install"]

@@ -3,7 +3,8 @@
 
 [build]
 builder = "NIXPACKS"
-buildCommand = "yarn build:production"
+# Clean build directory before building to avoid corrupted cache
+buildCommand = "rm -rf .medusa/server && yarn build:production"
 
 [deploy]
 # Server mode - handles HTTP traffic
