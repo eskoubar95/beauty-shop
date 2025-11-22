@@ -24,12 +24,14 @@ export default ({ env }) => {
     },
     postgres: {
       connection: {
+        // Prefer DATABASE_URL (Railway/Supabase format)
+        // Fallback to individual connection params for local development
         connectionString: env('DATABASE_URL'),
-        host: env('DATABASE_HOST', 'localhost'),
-        port: env.int('DATABASE_PORT', 5432),
-        database: env('DATABASE_NAME', 'strapi'),
-        user: env('DATABASE_USERNAME', 'strapi'),
-        password: env('DATABASE_PASSWORD', 'strapi'),
+        host: env('DATABASE_HOST') || env('POSTGRES_HOST', 'localhost'),
+        port: env.int('DATABASE_PORT') || env.int('POSTGRES_PORT', 5432),
+        database: env('DATABASE_NAME') || env('POSTGRES_DATABASE', 'strapi'),
+        user: env('DATABASE_USERNAME') || env('POSTGRES_USER', 'strapi'),
+        password: env('DATABASE_PASSWORD') || env('POSTGRES_PASSWORD', 'strapi'),
         ssl: env.bool('DATABASE_SSL', false) && {
           key: env('DATABASE_SSL_KEY', undefined),
           cert: env('DATABASE_SSL_CERT', undefined),

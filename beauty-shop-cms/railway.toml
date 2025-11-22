@@ -1,0 +1,21 @@
+# Railway Configuration for Strapi CMS
+# This service handles CMS content management
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/_health"
+healthcheckTimeout = 300
+restartPolicyType = "on-failure"
+
+# Strapi-specific environment variables
+[deploy.environmentVariables]
+NODE_ENV = "production"
+DATABASE_CLIENT = "postgres"
+# Railway automatically provides these PostgreSQL environment variables:
+# DATABASE_URL, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DATABASE, POSTGRES_USER, POSTGRES_PASSWORD
+# Strapi will use DATABASE_URL if available, otherwise individual connection params
+
