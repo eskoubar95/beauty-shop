@@ -13,14 +13,14 @@ const StepCardComponent = ({ card, index }: StepCardProps) => {
   const { title, body, color } = card
   const isAccent = color === "accent"
   const stepLabel = `Step ${index + 1}`
-  const headerColor = isAccent ? "bg-[#F2542D]" : "bg-[#051537]"
-  const textColor = isAccent ? "text-[#051537]" : "text-primary"
+  const headerColor = isAccent ? "bg-accent" : "bg-primary"
+  const textColor = isAccent ? "text-primary" : "text-primary"
 
   return (
     <Card
       className={cn(
         "flex h-full flex-col overflow-hidden rounded-none border-0 bg-white text-center transition-transform duration-200",
-        "shadow-[0_15px_30px_-12px_rgba(0,0,0,0.1),0_4px_12px_-8px_rgba(0,0,0,0.1)]"
+        "shadow-card"
       )}
       aria-label={title}
     >
@@ -39,7 +39,7 @@ const StepCardComponent = ({ card, index }: StepCardProps) => {
         )}
       >
         <div className="flex flex-col gap-4">
-          <CardTitle className="text-2xl font-semibold leading-tight sm:text-[26px]">
+          <CardTitle className="font-semibold text-heading-3-mobile sm:text-heading-3-tablet">
             {title}
           </CardTitle>
           <p className="max-w-xs text-base leading-relaxed text-primary/75">

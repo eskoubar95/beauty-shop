@@ -86,7 +86,7 @@ const CartDropdown = ({
           href="/cart"
           data-testid="nav-cart-link"
           aria-label={`Åbn kurv (${totalItems} vare${totalItems === 1 ? "" : "r"})`}
-          className="group relative inline-flex h-10 w-10 items-center justify-center text-[#0B2142] transition-colors duration-150 hover:text-[#08152D] lg:h-11 lg:w-11"
+          className="group relative inline-flex h-10 w-10 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker lg:h-11 lg:w-11"
         >
           <ShoppingBag
             className="h-5 w-5 transition-transform duration-200 group-hover:scale-110"
@@ -95,7 +95,7 @@ const CartDropdown = ({
           <span
             aria-live="polite"
             role="status"
-            className="absolute -right-1 -top-1 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#F2542D] px-1 text-[11px] font-semibold leading-none text-white"
+            className="absolute -right-1 -top-1 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-badge font-semibold leading-none text-white"
           >
             <span className="sr-only">Antal varer i kurv: </span>
             {totalItems}
@@ -113,7 +113,7 @@ const CartDropdown = ({
         >
           <PopoverPanel
             static
-            className="absolute top-[calc(100%+32px)] right-0 w-[420px] border border-gray-200 bg-white text-ui-fg-base shadow-[0_24px_60px_rgba(5,21,55,0.1)]"
+            className="absolute top-[calc(100%+32px)] right-0 w-[420px] border border-gray-200 bg-white text-ui-fg-base shadow-dropdown"
             data-testid="nav-cart-dropdown"
           >
             <div className="p-4 flex items-center justify-center">

@@ -35,7 +35,7 @@ const WhySection = ({ content }: WhySectionProps) => {
         <div className="flex w-full flex-col gap-6 text-primary lg:max-w-2xl xl:max-w-3xl xl:px-8">
           <h2
             id={headingId}
-            className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl lg:text-[56px] lg:leading-[1.05]"
+            className="font-semibold text-heading-2-mobile sm:text-heading-2-tablet lg:text-heading-2-desktop"
           >
             {title}
           </h2>

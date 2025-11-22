@@ -78,7 +78,9 @@ npm install
 # Storefront setup
 cd ../beauty-shop-storefront
 cp .env.local.example .env.local
-# Edit .env.local with your MedusaJS backend URL
+# Edit .env.local with your MedusaJS backend URL and Strapi CMS URL
+# Required: NEXT_PUBLIC_STRAPI_URL (default: http://localhost:1337)
+# Optional: STRAPI_API_TOKEN (for authenticated requests)
 npm install
 
 # Run migrations

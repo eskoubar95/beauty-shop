@@ -28,7 +28,7 @@ const FaqSection = ({ items }: FaqSectionProps) => {
           <p className="text-sm font-medium uppercase tracking-[0.22em] text-primary/60">
             FAQ
           </p>
-          <h2 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
+          <h2 className="font-semibold text-heading-2-mobile sm:text-heading-2-tablet lg:text-heading-2-desktop">
             Ofte stillede spørgsmål
           </h2>
           <p className="text-base leading-relaxed text-primary/75 sm:text-lg">

@@ -1,0 +1,57 @@
+{
+  "collectionName": "components_homepage_step_card_items",
+  "info": {
+    "displayName": "Step Card Item",
+    "singularName": "step-card-item",
+    "pluralName": "step-card-items",
+    "description": "Single step card with title, body, icon and color"
+  },
+  "options": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "maxLength": 255,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "body": {
+      "type": "text",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "icon": {
+      "type": "string",
+      "required": false,
+      "maxLength": 50,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "color": {
+      "type": "enumeration",
+      "enum": ["default", "accent"],
+      "default": "default",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    }
+  }
+}

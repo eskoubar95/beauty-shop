@@ -165,5 +165,7 @@ export interface HomepageContent {
   faq: FaqItem[]
   finalCta: FinalCtaContent
   footer: FooterContent
+  // Section order from Strapi (preserves drag & drop order)
+  sectionsOrder?: Array<'hero' | 'brandLogos' | 'whySection' | 'stepCards' | 'productCards' | 'storytelling' | 'faq' | 'finalCta'>
 }
 

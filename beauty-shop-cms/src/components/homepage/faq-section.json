@@ -1,0 +1,47 @@
+{
+  "collectionName": "components_homepage_faq_sections",
+  "info": {
+    "displayName": "FAQ Section",
+    "singularName": "faq-section",
+    "pluralName": "faq-sections",
+    "description": "FAQ section with title and repeatable FAQ items"
+  },
+  "options": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "internalLabel": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "maxLength": 255,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "default.faq-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

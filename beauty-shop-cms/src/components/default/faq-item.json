@@ -1,0 +1,37 @@
+{
+  "kind": "component",
+  "collectionName": "components_default_faq_items",
+  "info": {
+    "displayName": "FAQ Item",
+    "singularName": "faq-item",
+    "pluralName": "faq-items",
+    "description": "FAQ question and answer pair"
+  },
+  "options": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "answer": {
+      "type": "richtext",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

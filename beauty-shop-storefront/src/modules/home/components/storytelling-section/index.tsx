@@ -32,7 +32,7 @@ const StorytellingSection = ({ content }: StorytellingProps) => {
             </p>
           ) : null}
           <div className="flex flex-col gap-6 text-base leading-relaxed text-primary/80">
-            <h2 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
+            <h2 className="font-semibold text-heading-2-mobile sm:text-heading-2-tablet lg:text-heading-2-desktop">
               {title}
             </h2>
             <div className="flex flex-col gap-5">
@@ -70,7 +70,7 @@ const StorytellingSection = ({ content }: StorytellingProps) => {
           ) : null}
         </div>
         <div className="relative flex w-full justify-center">
-          <div className="relative aspect-[4/3] w-full max-w-[540px] border border-[#D5DAE5] bg-[#E9EDF5]">
+          <div className="relative aspect-[4/3] w-full max-w-[540px] border border-border-lighter bg-image-placeholder">
             {imageUrl ? (
               <Image
                 src={imageUrl}

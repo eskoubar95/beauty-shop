@@ -159,3 +159,13 @@ apps/*/out/
 # Package build outputs
 packages/*/dist/
 packages/*/build/
+
+# Design screenshots (large files, regenerate with Playwright MCP)
+.design/screenshots/**/*.png
+.design/screenshots/**/*.jpg
+.design/screenshots/**/*.jpeg
+# But keep the structure
+!.design/screenshots/.gitkeep
+
+# Feature blueprints (keep in git - they're markdown specs)
+# (no ignore rule - we want to commit these)

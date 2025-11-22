@@ -1,20 +1,25 @@
 import { Metadata } from "next"
 
-import Hero from "@modules/home/components/hero"
+import HomeTemplate from "@modules/home/templates"
 import { getRegion } from "@lib/data/regions"
-import { homepageContent } from "@lib/data/homepage-content"
-import BrandLogos from "@modules/home/components/brand-logos"
-import WhySection from "@modules/home/components/why-section"
-import StepCards from "@modules/home/components/step-cards"
-import ProductCards from "@modules/home/components/product-cards"
-import StorytellingSection from "@modules/home/components/storytelling-section"
-import FaqSection from "@modules/home/components/faq"
-import FinalCtaSection from "@modules/home/components/final-cta"
+import { getHomepage } from "@lib/data/cms/pages"
+import { getLocaleFromCountryCode } from "@lib/utils/locale"
 
-export const metadata: Metadata = {
-  title: "GUAPO - Hudpleje, der virker. Leveret til dig.",
-  description:
-    "Få koreansk hudpleje direkte i din postkasse. Vi samler de bedste produkter og leverer dem til dig hver måned.",
+// ISR: Revalidate homepage every 60 seconds to pick up changes from Strapi
+export const revalidate = 60
+
+// Generate metadata from Strapi (single source of truth)
+export async function generateMetadata(props: {
+  params: Promise<{ countryCode: string }>
+}): Promise<Metadata> {
+  const params = await props.params
+  const locale = getLocaleFromCountryCode(params.countryCode)
+  const page = await getHomepage(locale)
+  
+  return {
+    title: page?.seo?.metaTitle || "GUAPO - Hudpleje, der virker. Leveret til dig.",
+    description: page?.seo?.metaDescription || "Få koreansk hudpleje direkte i din postkasse. Vi samler de bedste produkter og leverer dem til dig hver måned.",
+  }
 }
 
 export default async function Home(props: {
@@ -29,16 +34,29 @@ export default async function Home(props: {
     return null
   }
 
-  return (
-    <main>
-      <Hero content={homepageContent.hero} />
-      <BrandLogos brandLogos={homepageContent.brandLogos} />
-      <WhySection content={homepageContent.whySection} />
-      <StepCards cards={homepageContent.stepCards} />
-      <ProductCards products={homepageContent.productCards} />
-      <StorytellingSection content={homepageContent.storytelling} />
-      <FaqSection items={homepageContent.faq} />
-      <FinalCtaSection content={homepageContent.finalCta} />
-    </main>
-  )
+  // Get locale from country code for Strapi i18n
+  const locale = getLocaleFromCountryCode(countryCode)
+
+  // Strapi is single source of truth - fetch homepage directly with locale
+  const page = await getHomepage(locale)
+  
+  // Graceful error handling: Show placeholder if Strapi content is missing
+  // This prevents the site from crashing if homepage is deleted/unpublished in Strapi
+  if (!page) {
+    return (
+      <main>
+        <div className="content-container py-12">
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold mb-4">Homepage under vedligeholdelse</h1>
+            <p className="text-gray-600">
+              Homepage indhold er ikke tilgængeligt i øjeblikket. Kontakt support hvis problemet fortsætter.
+            </p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  return <HomeTemplate page={page} region={region} />
 }
+

@@ -21,7 +21,7 @@ const ProductCards = ({ products }: ProductCardsProps) => {
         <div className="flex flex-col gap-4 text-primary">
           <h2
             id={headingId}
-            className="max-w-3xl font-semibold tracking-[-0.04em] lg:leading-[1.05]"
+            className="max-w-3xl font-semibold text-heading-2-mobile sm:text-heading-2-tablet lg:text-heading-2-desktop tracking-[-0.04em]"
           >
             To bokse – samme kvalitet, forskellige behov
           </h2>

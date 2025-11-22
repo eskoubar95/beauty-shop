@@ -44,6 +44,16 @@ const nextConfig = {
         protocol: "https",
         hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
       },
+      // Strapi CMS images (local and production)
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "1337",
+      },
+      {
+        protocol: "https",
+        hostname: "*.railway.app", // Railway Strapi deployment
+      },
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [
             {

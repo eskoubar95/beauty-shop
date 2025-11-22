@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pages",
+  "info": {
+    "singularName": "page",
+    "pluralName": "pages",
+    "displayName": "Page",
+    "description": "Static/marketing pages and homepage with dynamic sections"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "slug": {
+      "type": "uid",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 255,
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "pageType": {
+      "type": "enumeration",
+      "required": true,
+      "default": "standard",
+      "enum": [
+        "homepage",
+        "landing",
+        "standard"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "body": {
+      "type": "richtext",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "seo": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.seo",
+      "repeatable": false
+    },
+    "sections": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "homepage.hero-section",
+        "homepage.brand-logos-section",
+        "homepage.why-section",
+        "homepage.step-cards-section",
+        "homepage.product-section",
+        "homepage.storytelling-section",
+        "homepage.faq-section",
+        "homepage.final-cta-section"
+      ]
+    }
+  }
+}

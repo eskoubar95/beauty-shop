@@ -26,12 +26,12 @@ const NAV_LINKS = [
 ]
 
 const navLinkBase =
-  "relative inline-flex items-center px-5 py-7 text-sm font-medium text-[#0B2142] transition-colors duration-150 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-[#D9D9D9] after:transition-transform after:duration-150 hover:text-[#08152D] hover:after:scale-x-100"
+  "relative inline-flex items-center px-5 py-7 text-sm font-medium text-primary-light transition-colors duration-150 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-border after:transition-transform after:duration-150 hover:text-primary-darker hover:after:scale-x-100"
 
 export default async function Nav() {
   return (
     <div className="sticky inset-x-0 top-0 z-50 bg-white">
-      <header className="border-b border-[#E6E2DA]">
+      <header className="border-b border-border-light">
         {/* Desktop */}
         <div className="mx-auto hidden w-full max-w-[1440px] items-center justify-between px-8 lg:flex">
           <div className="flex items-center gap-12">
@@ -52,7 +52,7 @@ export default async function Nav() {
 
           </div>
 
-          <div className="flex items-center gap-6 text-[#0B2142]">
+          <div className="flex items-center gap-6 text-primary-light">
             <nav
               aria-label="Primær navigation"
               className="flex items-stretch"
@@ -63,7 +63,7 @@ export default async function Nav() {
                   href={href}
                   data-testid={testId}
                   className={`${navLinkBase} ${
-                    defaultActive ? "text-[#08152D] after:scale-x-100 after:bg-[#F2542D]" : ""
+                    defaultActive ? "text-primary-darker after:scale-x-100 after:bg-accent" : ""
                   }`}
                 >
                   {label}
@@ -71,14 +71,14 @@ export default async function Nav() {
               ))}
             </nav>
 
-            <span className="hidden h-6 w-px bg-[#E6E2DA] lg:block" aria-hidden="true" />
+            <span className="hidden h-6 w-px bg-border-light lg:block" aria-hidden="true" />
 
             <div className="flex items-center gap-6">
             <LocalizedClientLink
               href="/account"
               data-testid="nav-account-link"
               aria-label="Gå til din konto"
-              className="inline-flex h-11 w-11 items-center justify-center text-[#0B2142] transition-colors duration-150 hover:text-[#08152D]"
+              className="inline-flex h-11 w-11 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker"
             >
               <User size="20" />
             </LocalizedClientLink>
@@ -89,10 +89,10 @@ export default async function Nav() {
                   href="/cart"
                   data-testid="nav-cart-link"
                   aria-label="Åbn kurv (0 varer)"
-                  className="inline-flex h-11 w-11 items-center justify-center text-[#0B2142] transition-colors duration-150 hover:text-[#08152D]"
+                  className="inline-flex h-11 w-11 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker"
                 >
                   <span className="sr-only">Kurv</span>
-                  <span className="text-sm font-semibold text-[#0B2142]">0</span>
+                  <span className="text-sm font-semibold text-primary-light">0</span>
                 </LocalizedClientLink>
               }
             >
@@ -122,12 +122,12 @@ export default async function Nav() {
             />
           </LocalizedClientLink>
 
-          <div className="flex items-center gap-4 text-[#0B2142]">
+          <div className="flex items-center gap-4 text-primary-light">
             <LocalizedClientLink
               href="/account"
               data-testid="nav-account-link-mobile"
               aria-label="Gå til din konto"
-              className="inline-flex h-10 w-10 items-center justify-center text-[#0B2142] transition-colors duration-150 hover:text-[#08152D]"
+              className="inline-flex h-10 w-10 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker"
             >
               <User size="18" />
             </LocalizedClientLink>
@@ -137,10 +137,10 @@ export default async function Nav() {
                   href="/cart"
                   data-mobile-cart="true"
                   aria-label="Åbn kurv (0 varer)"
-                  className="inline-flex h-10 w-10 items-center justify-center text-[#0B2142] transition-colors duration-150 hover:text-[#08152D] lg:hidden"
+                  className="inline-flex h-10 w-10 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker lg:hidden"
                 >
                   <span className="sr-only">Kurv</span>
-                  <span className="text-sm font-semibold text-[#0B2142]">0</span>
+                  <span className="text-sm font-semibold text-primary-light">0</span>
                 </LocalizedClientLink>
               }
             >

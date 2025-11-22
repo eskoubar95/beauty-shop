@@ -62,12 +62,12 @@ const ProductCardComponent = ({ product, variant = "primary" }: ProductCardProps
   return (
     <article
       className={cn(
-        "flex h-full flex-col border border-[#DFE3EC] bg-white shadow-[0_22px_60px_rgba(5,21,55,0.08)] transition-transform duration-200 hover:-translate-y-1",
-        isSecondaryVariant && "bg-[#F7F9FC]"
+        "flex h-full flex-col border border-border bg-white shadow-product-card transition-transform duration-200 hover:-translate-y-1",
+        isSecondaryVariant && "bg-background-lighter"
       )}
     >
-      <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-        <div className="relative aspect-video w-full border border-[#D5DAE5] bg-[#E9EDF5]">
+      <div className="px-8 pt-8 sm:pt-10">
+        <div className="relative aspect-video w-full border border-border-lighter bg-image-placeholder">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -85,14 +85,14 @@ const ProductCardComponent = ({ product, variant = "primary" }: ProductCardProps
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-8 px-8 pb-8 pt-6 text-primary sm:px-10 sm:pb-10 sm:pt-8">
+      <div className="flex flex-1 flex-col gap-8 px-8 pb-8 pt-6 text-primary sm:pb-10 sm:pt-8">
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="text-3xl font-semibold leading-tight tracking-tight sm:text-[34px]">
+            <h3 className="font-semibold tracking-tight text-heading-3-mobile sm:text-heading-3-tablet">
               {title}
             </h3>
             {badge ? (
-              <span className="bg-[#08152D] px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-white">
+              <span className="bg-primary-darker px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-white">
                 {badge}
               </span>
             ) : null}
@@ -129,10 +129,10 @@ const ProductCardComponent = ({ product, variant = "primary" }: ProductCardProps
             <span className="text-sm font-medium uppercase tracking-[0.2em] text-primary/60">
               Første måned:
             </span>
-            <span className="text-[30px] font-semibold tracking-tight sm:text-[34px]">
+            <span className="font-semibold text-price-mobile sm:text-price-tablet lg:text-price-desktop">
               {firstMonth}
             </span>
-            <span className="text-sm font-semibold text-[#F2542D]">
+            <span className="text-sm font-semibold text-accent">
               efterfølgende fast {subsequent}/pr. måned
             </span>
           </div>

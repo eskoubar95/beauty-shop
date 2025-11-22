@@ -24,6 +24,16 @@ Dette dokument guider dig gennem setup af Beauty Shop på Railway med separate S
 │           │   Redis     │                   │
 │           │  (Plugin)   │                   │
 │           └─────────────┘                   │
+│                                              │
+│  ┌─────────────────┐  ┌─────────────────┐  │
+│  │ beauty-shop     │  │ beauty-shop     │  │
+│  │ -strapi         │  │ -strapi-db      │  │
+│  │                 │  │                 │  │
+│  │ CMS Admin       │  │ PostgreSQL      │  │
+│  │ + REST API      │  │ (Plugin)        │  │
+│  │ Port: 1337      │  │                 │  │
+│  │ Public URL ✅   │  │ Internal only   │  │
+│  └─────────────────┘  └─────────────────┘  │
 └──────────────────────────────────────────────┘
 ```
 
@@ -150,7 +160,79 @@ NODE_ENV=production
 
 ---
 
-### Step 5: Deploy Both Services
+### Step 5: Setup Strapi CMS Service (Optional - CORE-27)
+
+#### 5.1 Add Strapi Service
+1. I Railway projektet, klik **"+ New"**
+2. Vælg **"GitHub Repo"**
+3. Vælg samme repository
+4. Rename service til: `beauty-shop-strapi`
+
+#### 5.2 Add PostgreSQL Plugin for Strapi
+1. I Railway projektet, klik **"+ New"**
+2. Vælg **"Add Plugin"** → **"PostgreSQL"**
+3. Rename plugin til: `beauty-shop-strapi-db`
+4. PostgreSQL vil automatisk provisione
+5. Kopier connection string fra plugin (vi bruger den senere)
+
+#### 5.3 Configure Strapi Service
+1. I **Settings** tab:
+   - **Root Directory**: `beauty-shop-cms`
+   - **Build Command**: `npm run build`
+   - **Start Command**: `npm run start`
+   - **Health Check Path**: `/admin` (optional)
+
+2. **Generate Domain**:
+   - I **Settings** tab → **Networking**
+   - Klik **"Generate Domain"**
+   - Kopier URL'en (f.eks. `beauty-shop-strapi-production.up.railway.app`)
+
+#### 5.4 Add Environment Variables for Strapi
+Klik på **Variables** tab og tilføj:
+
+```env
+# Server
+HOST=0.0.0.0
+PORT=1337
+PUBLIC_STRAPI_URL=${{beauty-shop-strapi.PUBLIC_DOMAIN}}
+NODE_ENV=production
+
+# Database (from PostgreSQL plugin)
+DATABASE_CLIENT=postgres
+DATABASE_URL=${{beauty-shop-strapi-db.DATABASE_URL}}
+DATABASE_HOST=${{beauty-shop-strapi-db.PGHOST}}
+DATABASE_PORT=${{beauty-shop-strapi-db.PGPORT}}
+DATABASE_NAME=${{beauty-shop-strapi-db.PGDATABASE}}
+DATABASE_USERNAME=${{beauty-shop-strapi-db.PGUSER}}
+DATABASE_PASSWORD=${{beauty-shop-strapi-db.PGPASSWORD}}
+DATABASE_SSL=true
+
+# Security (generate strong random values)
+APP_KEYS=<generate_4_random_base64_strings_separated_by_commas>
+ADMIN_JWT_SECRET=<generate_random_base64_string>
+API_TOKEN_SALT=<generate_random_base64_string>
+TRANSFER_TOKEN_SALT=<generate_random_base64_string>
+ENCRYPTION_KEY=<generate_random_base64_string>
+
+# CORS (allow storefront to access)
+CORS_ORIGIN=https://beautyshop.vercel.app,https://*.vercel.app
+```
+
+**Note:** Generate secrets using:
+```bash
+# Generate random base64 strings
+openssl rand -base64 32  # For each secret
+```
+
+#### 5.5 First-Time Admin Setup
+1. Deploy Strapi service
+2. Visit `https://beauty-shop-strapi-production.up.railway.app/admin`
+3. Create admin user via Strapi's first-time setup UI
+4. Configure content types (see Phase 2 of CORE-27 plan)
+
+---
+
+### Step 6: Deploy All Services
 
 1. **Deploy Server**:
    - Commit og push ændringer til GitHub
@@ -159,10 +241,16 @@ NODE_ENV=production
 2. **Deploy Worker**:
    - Samme commit trigger også worker deployment
 
-3. **Verify Deployments**:
-   - Check logs for begge services
+3. **Deploy Strapi** (if configured):
+   - Ensure `beauty-shop-cms/` directory exists in repo
+   - Railway auto-deploys Strapi service
+   - First-time admin setup required via `/admin` URL
+
+4. **Verify Deployments**:
+   - Check logs for alle services
    - Server skal vise: `🌐 SERVER mode`
    - Worker skal vise: `👷 WORKER mode`
+   - Strapi skal vise: `Server started on port 1337`
 
 ---
 

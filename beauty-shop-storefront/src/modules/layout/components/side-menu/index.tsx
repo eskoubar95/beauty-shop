@@ -48,7 +48,7 @@ const SideMenu = () => {
                 <Popover.Button
                   data-testid="nav-menu-button"
                   aria-label={open ? "Luk menu" : "Åbn menu"}
-                  className="inline-flex h-11 w-11 items-center justify-center text-[#0B2142] transition-colors duration-150 hover:text-[#08152D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B2142]"
+                  className="inline-flex h-11 w-11 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-light"
                 >
                   <AlignJustify className="h-5 w-5" aria-hidden="true" />
                   <span className="sr-only">{open ? "Luk navigation" : "Åbn navigation"}</span>
@@ -78,7 +78,7 @@ const SideMenu = () => {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <PopoverPanel className="fixed inset-0 z-50 flex transform flex-col bg-white px-6 py-8 text-[#0B2142] sm:ml-auto sm:max-w-sm sm:shadow-[0_20px_60px_rgba(5,21,55,0.18)]">
+                <PopoverPanel className="fixed inset-0 z-50 flex transform flex-col bg-white px-6 py-8 text-primary-light sm:ml-auto sm:max-w-sm sm:shadow-menu">
                   <div className="flex items-center justify-between">
                     <LocalizedClientLink
                       href="/"
@@ -98,7 +98,7 @@ const SideMenu = () => {
                       data-testid="close-menu-button"
                       onClick={close}
                       aria-label="Luk menu"
-                      className="inline-flex h-12 w-12 items-center justify-center text-[#0B2142] transition-colors duration-150 hover:text-[#08152D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B2142]"
+                      className="inline-flex h-12 w-12 items-center justify-center text-primary-light transition-colors duration-150 hover:text-primary-darker focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-light"
                     >
                       <XMark className="h-6 w-6" />
                     </button>
@@ -109,7 +109,7 @@ const SideMenu = () => {
                       <LocalizedClientLink
                         key={label}
                         href={href}
-                        className="transition-colors duration-150 hover:text-[#08152D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B2142]"
+                        className="transition-colors duration-150 hover:text-primary-darker focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-light"
                         onClick={close}
                       >
                         {label}

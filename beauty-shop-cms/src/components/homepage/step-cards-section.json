@@ -1,0 +1,47 @@
+{
+  "collectionName": "components_homepage_step_cards_sections",
+  "info": {
+    "displayName": "Step Cards Section",
+    "singularName": "step-cards-section",
+    "pluralName": "step-cards-sections",
+    "description": "Section with step-by-step cards explaining the process"
+  },
+  "options": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "internalLabel": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "maxLength": 255,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "steps": {
+      "type": "component",
+      "repeatable": true,
+      "component": "homepage.step-card-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

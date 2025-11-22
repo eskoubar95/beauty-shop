@@ -10,11 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-[#08152D] bg-[#08152D] font-mono uppercase tracking-[0.2em] text-white transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#0B2142] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B2142]",
+          "border border-primary-darker bg-primary-darker font-mono uppercase tracking-[0.2em] text-white transition-transform duration-200 hover:-translate-y-0.5 hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-light",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-[#08152D] bg-white font-mono uppercase tracking-[0.2em] text-[#08152D] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#08152D] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B2142]",
+          "border border-primary-darker bg-white font-mono uppercase tracking-[0.2em] text-primary-darker transition-transform duration-200 hover:-translate-y-0.5 hover:bg-primary-darker hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-light",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -23,7 +23,7 @@ const buttonVariants = cva(
       size: {
         default: "h-10 px-4",
         sm: "h-9 px-3",
-        lg: "h-10 px-4 text-[15px] sm:h-11 sm:px-8",
+        lg: "h-10 px-4 text-button-lg sm:h-11 sm:px-8",
         icon: "h-10 w-10",
       },
     },

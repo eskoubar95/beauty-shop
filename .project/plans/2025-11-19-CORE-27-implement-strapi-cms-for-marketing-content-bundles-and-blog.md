@@ -160,71 +160,75 @@ Definér de nødvendige content types og komponenter i Strapi (page, bundlePage,
 ### Changes Required:
 
 #### 1. Opret `seo` component
-**Sted:** Strapi admin → Content-Type Builder.  
+**Sted:** `beauty-shop-cms/src/api/seo/components/seo.json` (programmatisk).  
 **Changes:**  
 - Component `seo`:  
-  - `metaTitle` (string)  
-  - `metaDescription` (text)  
-  - `ogImage` (media – single).  
+  - `metaTitle` (string, max 255)  
+  - `metaDescription` (text, max 500)  
+  - `ogImage` (media – single image).  
+- Schema-fil oprettet programmatisk.
 
-**Rationale:** Genbruges på tværs af pages, bundlePages og blogPosts og matcher acceptance criteria om basis-SEO.
+**Rationale:** Genbruges på tværs af pages, bundlePages og blogPosts og matcher acceptance criteria om basis-SEO. Programmatisk oprettelse sikrer version control.
 
 #### 2. Opret `page` content type
-**Sted:** Strapi admin.  
+**Sted:** `beauty-shop-cms/src/api/page/content-types/page/schema.json` (programmatisk).  
 **Changes:**  
 - Content Type `page` (collection type) med felter:  
   - `slug` (UID, unik).  
   - `title` (string).  
-  - `body` (rich text eller dynamic zone/blocks – start simpelt med rich text).  
+  - `body` (rich text).  
   - `seo` (component).  
-- Opret min. én record for About-siden (slug `about`) og evt. generiske marketing-sider (kan udvides senere).
+- Schema-fil oprettet programmatisk. Opret min. én record i Strapi admin for About-siden (slug `about`) og evt. generiske marketing-sider (kan udvides senere).
 
-**Rationale:** Dækker statiske marketing-sider som About og potentielt andre enkle sider.
+**Rationale:** Dækker statiske marketing-sider som About og potentielt andre enkle sider. Programmatisk oprettelse sikrer version control.
 
 #### 3. Opret `bundlePage` (eller `productPage`) content type
-**Sted:** Strapi admin.  
+**Sted:** `beauty-shop-cms/src/api/bundle-page/content-types/bundle-page/schema.json` (programmatisk).  
 **Changes:**  
 - Content Type `bundlePage`:  
   - `slug` (UID) – til URL i storefront.  
   - `medusaProductId` (string) eller `medusaProductHandle` (string) – reference til Medusa-produkt.  
   - `heroTitle`, `heroSubtitle`, `heroImage` (media).  
-  - `sections` (repeatable component eller JSON/dynamic zone) til indholdskasser/USPs.  
-  - `faqItems` (repeatable component med `question`, `answer`).  
-  - `socialProof` (fx ratings/testimonials, kan starte simpelt).  
+  - `sections` (JSON) til indholdskasser/USPs.  
+  - `faqItems` (repeatable component `shared.faq-item` med `question`, `answer`).  
+  - `socialProof` (JSON) – ratings/testimonials.  
   - `seo` (component).  
-- Opret mindst én bundle-side (fx Essentials) med realistisk indhold, så integration kan testes.
+- Schema-fil oprettet programmatisk. Opret mindst én bundle-side i Strapi admin (fx Essentials) med realistisk indhold, så integration kan testes.
 
-**Rationale:** Giver marketing fleksibilitet til at skrive rig copy omkring kits, mens Medusa stadig styrer pris/stock.
+**Rationale:** Giver marketing fleksibilitet til at skrive rig copy omkring kits, mens Medusa stadig styrer pris/stock. Programmatisk oprettelse sikrer version control.
 
 #### 4. Opret `blogPost` content type
-**Sted:** Strapi admin.  
+**Sted:** `beauty-shop-cms/src/api/blog-post/content-types/blog-post/schema.json` (programmatisk).  
 **Changes:**  
 - Content Type `blogPost`:  
   - `title` (string).  
-  - `slug` (UID, unik).  
+  - `slug` (UID, unik, auto-generated from title).  
   - `excerpt` (text).  
-  - `body` (rich text eller blocks).  
+  - `body` (rich text).  
   - `coverImage` (media).  
-  - `tags` (repeatable string eller separat relation).  
+  - `tags` (repeatable string).  
   - `publishedAt` (datetime).  
   - `seo` (component).  
-- Opret min. én publiceret blogPost til senere brug på index/detail.
+- Schema-fil oprettet programmatisk. Opret min. én publiceret blogPost i Strapi admin til senere brug på index/detail.
 
-**Rationale:** Leverer SEO/guide-content uden at kræve kompleks editoriel platform.
+**Rationale:** Leverer SEO/guide-content uden at kræve kompleks editoriel platform. Programmatisk oprettelse sikrer version control.
 
 #### 5. Konfigurér Public API-permissions & evt. tokens
-**Sted:** Strapi admin → Settings → Roles & Permissions.  
+**Sted:** `beauty-shop-cms/src/bootstrap.ts` (programmatisk) + Strapi admin (verifikation).  
 **Changes:**  
-- For `public` role: Tillad read-adgang (find/findOne) for `page`, `bundlePage`, `blogPost` (evt. kun published).  
+- Bootstrap script konfigurerer automatisk read-adgang (find/findOne) for `public` role på `page`, `bundlePage`, `blogPost`.  
+- Script kører ved Strapi startup og opretter/opdaterer permissions automatisk.  
+- Verificer i Strapi admin → Settings → Roles & Permissions → Public at permissions er korrekte.  
 - Alternativt: Opret API token med læserettigheder og planlæg at bruge token-baseret auth fra storefront (bedre kontrol i prod).
 
 **Rationale:** Storefront skal kunne kalde Strapi sikkert. For MVP kan public read være acceptabelt, men på sigt er token anbefalet.
 
 #### 6. Dokumentér content model
-**File:** `.project/06-Backend_Guide.md` (ny sektion) eller separat doc (fx `.project/cms-strapi-content-model.md`).  
+**File:** `.project/cms-strapi-content-model.md` (oprettet).  
 **Changes:**  
-- Beskriv kort de 3 content types, `seo`-component og deres vigtigste felter.  
-- Notér relationen til Medusa (fx `bundlePage.medusaProductId`).
+- Beskriv kort de 3 content types, `seo`-component, `faq-item` component og deres vigtigste felter.  
+- Notér relationen til Medusa (fx `bundlePage.medusaProductId`).  
+- Dokumenter API endpoints og usage eksempler.
 
 **Rationale:** Gør det nemt for både udviklere og editors at forstå strukturen og undgå misbrug af felter.
 
@@ -390,129 +394,138 @@ export async function getPageBySlug(slug: string) {
 
 ---
 
-## Phase 4: Page Integrations, Blog & Documentation
+## Phase 4: Homepage integration med Strapi (pre-built sections)
 
 ### Overview
-Brug CMS-datalaget til at erstatte dele af den hardcodede homepage-content, implementér About-side og første bundle-side med Strapi-indhold, opret en simpel blog, og opdatér dokumentation + Linear-status.
+Fokus udelukkende på forsiden: få en ren modulstruktur i storefront, og lad Strapi styre indholdet via en simpel `Page`-model med pre-built sektioner (Hero, Products, FAQ, Storytelling, Final CTA osv.) i en Dynamic Zone – **uden eksterne page builder-plugins**. Målet er at give marketing et intuitivt flow, hvor de kan tilføje/omrokere sektioner og bruge Strapis indbyggede Live Preview, uden ekstra licenser eller forældede plugins.
 
 ### Changes Required:
 
-#### 1. Integrér Strapi i forsiden (hero + mindst én sektion)
-**File:**  
-- `beauty-shop-storefront/src/lib/data/homepage-content.ts`  
-- Forside-template i `src/app/(storefront)/[countryCode]/(main)/page.tsx` (eller tilsvarende).  
+#### 1. Analyse af homepage-struktur (FÆRDIG – dokumenteret)
+**Files:**  
+- `beauty-shop-storefront/src/app/[countryCode]/(main)/page.tsx`  
+- `beauty-shop-storefront/src/modules/home/`  
+- `.project/analysis/CORE-27-strapi-cms/homepage-structure-analysis.md`  
+**Changes (allerede udført):**  
+- Kortlæg nuværende struktur og dataflow for forsiden (mock data vs. API).  
+- Sammenlign med MedusaJS modules pattern og dokumentér konklusioner.  
+
+**Rationale:** Sikrer at vi forstår eksisterende arkitektur og kan bygge videre på den uden at bryde patterns.
+
+#### 2. Refaktor homepage til `HomeTemplate` (FÆRDIG – implementeret)
+**Files:**  
+- `beauty-shop-storefront/src/modules/home/templates/index.tsx`  
+- `beauty-shop-storefront/src/app/[countryCode]/(main)/page.tsx`  
+**Changes (allerede udført):**  
+- Opret `HomeTemplate`, som samler alle forsidesektioner (Hero, BrandLogos, WhySection, StepCards, ProductCards, StorytellingSection, FAQ, FinalCta) i én template.  
+- Forenkle route handleren i `page.tsx` til at hente data + kalde `HomeTemplate`.  
+- Sørg for, at `HomeTemplate` tager en samlet `HomepageContent`-struktur og er klar til at modtage Strapi-data senere.
+
+**Rationale:** Skaber et klart “single entry point” for forsiden, så vi kan skifte fra mock-data til Strapi uden at ændre alle komponenter enkeltvis.
+
+#### 3. Definér `Page` content type + homepage-sektioner i Strapi
+**Files:**  
+- `beauty-shop-cms/src/api/page/content-types/page/schema.json`  
+- `beauty-shop-cms/src/components/homepage/hero-section.json`  
+- `beauty-shop-cms/src/components/homepage/brand-logos-section.json`  
+- `beauty-shop-cms/src/components/homepage/why-section.json`  
+- `beauty-shop-cms/src/components/homepage/step-cards-section.json`  
+- `beauty-shop-cms/src/components/homepage/product-section.json`  
+- `beauty-shop-cms/src/components/homepage/storytelling-section.json`  
+- `beauty-shop-cms/src/components/homepage/faq-section.json`  
+- `beauty-shop-cms/src/components/homepage/final-cta-section.json`  
 **Changes:**  
-- Tilføj en server-side loader, der henter `homepage`-indhold fra Strapi (`page` eller dedikeret type).  
-- Behold eksisterende `homepageContent` som fallback (f.eks. hvis Strapi ikke svarer i dev).  
-- Map Strapi-felter til `HomepageContent`-strukturen og brug dem i hero + udvalgt sektion (fx `whySection` eller `storytelling`).
+- Opret `Page` collection type med felter:  
+  - `title` (string) – sidens titel.  
+  - `slug` (UID) – unik (fx `homepage`).  
+  - `pageType` (enum: `homepage`, `landing`, `standard`).  
+  - `seo` (component: `shared.seo` via @strapi/plugin-seo).  
+  - `sections` (Dynamic Zone) – liste af pre-built sektioner.  
+- Opret Strapi components under kategori `homepage` som matcher eksisterende React-komponenter:  
+  - `hero-section` (overskrift, undertekst, billede, CTA-links osv.).  
+  - `brand-logos-section` (liste af logoer + evt. titel).  
+  - `why-section` (title, subtitle).  
+  - `step-cards-section` (title + repeatable steps).  
+  - `product-section` (title, description, liste af produkter/handles).  
+  - `storytelling-section` (title, rich text, billede, alignment).  
+  - `faq-section` (title + repeatable FAQ-items – kan genbruge `default.faq-item`).  
+  - `final-cta-section` (title, subtitle, CTA-knapper).  
+- Opret en `Page`-record i Strapi for `homepage` (slug `homepage`) og udfyld realistisk indhold.
 
-```ts
-// Skitse: src/app/(storefront)/[countryCode]/(main)/page.tsx
-import { homepageContent as fallbackHomepageContent } from "@lib/data/homepage-content";
-import { getPageBySlug } from "@lib/data/cms/pages";
+**Rationale:** Giver marketing et simpelt, visuelt flow baseret på native Strapi-komponenter, hvor de kan tilføje og omrokere sektioner uden at tænke i kolonner eller tekniske detaljer.
 
-export default async function HomePage({ params: { countryCode } }) {
-  let content = fallbackHomepageContent;
-
-  try {
-    const cmsPage = await getPageBySlug("homepage");
-    if (cmsPage) {
-      // map cmsPage.body/sections → HomepageContent (kan gøres iterativt)
-      content = {
-        ...content,
-        hero: {
-          ...content.hero,
-          title: cmsPage.title,
-          // ...
-        },
-      };
-    }
-  } catch (error) {
-    // Capture error with Sentry (server-side, no PII)
-    const { captureException } = await import("@sentry/nextjs");
-    captureException(error, {
-      tags: { component: "homepage-cms-integration" },
-      extra: { fallbackUsed: true },
-    });
-  }
-
-  return <Home content={content} countryCode={countryCode} />;
-}
-```
-
-**Rationale:** Minimerer risiko ved at bevare fallback, mens vi gradvist flytter indhold til Strapi.
-
-#### 2. About-side fra Strapi
-**File:** About-route i `src/app/(storefront)/[countryCode]/(main)/...` (ny, fx `about/page.tsx`) + evt. ny modul-template.  
+#### 4. Hent og map homepage-data fra Strapi til `HomeTemplate`
+**Files:**  
+- `beauty-shop-storefront/src/lib/data/cms/pages.ts` (udvid)  
+- `beauty-shop-storefront/src/lib/types/cms.ts` (udvid med `Page` + `HomepageSection`-typer)  
+- `beauty-shop-storefront/src/app/[countryCode]/(main)/page.tsx`  
 **Changes:**  
-- Opret en enkel About-page, der bruger `getPageBySlug("about")`.  
-- Render titel/body og SEO (title/meta/OG) via Next metadata API.
+- Tilføj helper `getHomepage()` der:  
+  - Kalder Strapi `/api/pages?filters[slug][$eq]=homepage&populate[sections]=*&populate[seo]=*`.  
+  - Mapper Strapi `sections` (Dynamic Zone) til en struktureret `HomepageContent`-model, som `HomeTemplate` kan bruge.  
+- Opdater `page.tsx` til at kalde `getHomepage()` i stedet for (eller som supplement til) lokal mock `homepageContent`.  
+- Behold fallback til eksisterende `homepageContent`, hvis Strapi ikke svarer eller ingen `homepage` findes.
 
-**Rationale:** Opfylder acceptance criterion om at About skal drives af Strapi og giver marketing et konkret sted at eksperimentere.
+**Rationale:** Gør integrationen transparent for UI-laget – `HomeTemplate` skal kun kende én form for data, uanset om det kommer fra mock eller Strapi.
 
-#### 3. Bundle/kit-side med kombineret Strapi + Medusa
-**File:**  
-- Produkt-/bundle-template i `src/app/(storefront)/[countryCode]/(main)/products/[handle]/page.tsx` (eller tilsvarende).  
-- Evt. ny modul-komponent til marketing-sektion.  
+#### 5. Opsæt Strapi Live Preview for `Page` (homepage)
+**Files:**  
+- `beauty-shop-storefront/src/app/api/preview/route.ts` (ny eller eksisterende)  
+- `beauty-shop-storefront/src/app/[countryCode]/(main)/page.tsx` (understøttelse af draft/preview)  
+- Strapi admin → Content Manager / Settings (Preview URL)  
 **Changes:**  
-- Ved rendering af det udvalgte kit (fx `essentials`), slå op i Strapi `bundlePage` via slug eller Medusa-handle (`medusaProductHandle`).  
-- Indsæt ekstra hero/USPs/FAQ-sektioner under eller omkring eksisterende Medusa-baseret produktinfo.  
+- Opret en Preview API-route i Next.js, som:  
+  - Validerer en `secret` query parameter.  
+  - Sætter `draftMode()` (Next.js).  
+  - Redirecter til forsiden med passende parametre (fx `/?preview=1`).  
+- Konfigurer Strapi `Page` til at bruge en Preview URL ala:  
+  - `https://{storefront-domain}/api/preview?slug={slug}&secret=...`  
+- Sørg for, at `getHomepage()` kan køre i “preview mode” (fx ved at bruge Strapi-admin token og hente `status=preview`/draft-indhold).  
+- Dokumentér i kort form for marketing hvordan de:  
+  - Redigerer `homepage` i Strapi.  
+  - Klikker “Preview” for at se ændringer uden at publish.
 
-**Rationale:** Viser konkret, hvordan marketingcopy kan styres via CMS uden at påvirke commerce-logik.
+**Rationale:** Opfylder ønsket om at kunne se ændringer live uden at være afhængig af eksterne page builder-plugins.
 
-#### 4. Simpel blog (index + detail)
-**File:**  
-- `src/app/(storefront)/[countryCode]/(main)/blog/page.tsx` (index).  
-- `src/app/(storefront)/[countryCode]/(main)/blog/[slug]/page.tsx` (detail).  
+#### 6. Dokumentation
+**Files:**  
+- `.project/analysis/CORE-27-strapi-cms/homepage-structure-analysis.md`  
+- `.project/analysis/CORE-27-strapi-cms/homepage-integration.md` (ny)  
+- `.project/GETTING_STARTED.md` (opdater)  
 **Changes:**  
-- Blog-index: brug `listBlogPosts()` til at vise liste med titel, excerpt, publish date og link til detail.  
-- Blog-detail: brug `getBlogPostBySlug(slug)` til at render titel, coverImage og body (evt. som rich text komponent).  
-- Tilføj simpel navigation til blog fra footer eller nav.
+- Opdater analyse-dokumentet med endelig beslutning om pre-built sections og fravalg af eksternt Page Builder plugin (Node 22-krav, licens/vedligeholdelse).  
+- Dokumentér homepage content model (`Page` + `homepage.*`-components) og mapping til `HomeTemplate`.  
+- Beskriv marketing-flowet step-by-step (oprette/redigere `homepage`, tilføje sektioner, ændre rækkefølge, bruge Preview).  
+- Opdater GETTING_STARTED.md med:
+  - Hvordan man starter Strapi og finder `Pages` → `homepage`.  
+  - Hvordan man ændrer forsiden og bruger Live Preview.  
+  - Evt. kendte begrænsninger/roadmap (fx future column-layout).
 
-**Rationale:** Opfylder acceptance criteria omkring blog og understøtter SEO/guides.
-
-#### 5. Dokumentation & arkitektur-opdateringer
-**File:**  
-- `.project/03-Tech_Stack.md`  
-- `.project/08-Architecture.md`  
-- `.project/GETTING_STARTED.md`  
-**Changes:**  
-- Tech Stack: Opdatér sektion, der omtaler Payload CMS, til at beskrive Strapi (hvorfor valgt, hvordan integreret, links til Strapi/Medusa-artikler).  
-- Architecture: Tilføj Strapi som separat service med egen Postgres og Railway deploy; fjern planlagt `payload`-schema.  
-- Getting Started: Tilføj “How to run Strapi locally” med Docker-kommando, env-opsætning og hvordan man logger ind som admin.
-
-**Rationale:** Holder dokumentation i sync med den faktiske arkitektur og hjælper nye devs/editors hurtigt i gang.
-
-#### 6. Opdatér CORE-26 i Linear
-**Sted:** Linear UI (manuelt) eller via MCP-kommando.  
-**Changes:**  
-- Tilføj kommentar til CORE-26 der beskriver, at Payload-approachen er blokeret og at CORE-27 nu er den primære CMS-implementeringsvej.  
-- Justér status (fx til “Cancelled”/“Blocked”) alt efter workflow.
-
-**Rationale:** Sikrer historik og tydelig kommunikation om strategisk skift fra Payload til Strapi.
+**Rationale:** Sikrer at både udviklere og content editors forstår den nye, simple homepage-arkitektur.
 
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] `npm run lint`, `npm run type-check` og `npm run build` for `beauty-shop-storefront` passerer med de nye sider og CMS-integration.  
-- [ ] Eventuelle nye tests (unit/integration) for CMS-helpers og sider passerer: `npm run test`.  
+- [ ] `npm run lint`, `npm run type-check` og `npm run build` for `beauty-shop-storefront` passerer efter homepage-integration.  
+- [ ] `npm run build` og `npm run develop` for `beauty-shop-cms` passerer efter tilføjelse af `Page` + `homepage.*` components.  
+- [ ] Ingen TypeScript- eller linting-errors i refaktorerede homepage-filer (`HomeTemplate`, `page.tsx`, CMS helpers/typer).
 
 #### Manual Verification:
-- [ ] Strapi-hero + mindst én sektion vises korrekt på forsiden (og ændringer i Strapi slår igennem uden deploy).  
-- [ ] About-side viser indhold fra Strapi og loader uden fejl for relevante locale/country-codes.  
-- [ ] Den udvalgte bundle/kit-side viser både Medusa-priser/stock og supplerende marketing-indhold fra Strapi.  
-- [ ] Blog-index viser mindst ét blogindlæg; klik på indlæg åbner detail-side med korrekt indhold.  
-- [ ] **Performance:** Forsiden loader < 2 sekunder (målt via Lighthouse eller browser DevTools Network tab) selv med CMS-kald.  
-- [ ] **Accessibility:** 
-  - [ ] CMS-drevet indhold (hero, About, blog) bruger semantisk korrekt HTML (h1-h6, p, ul/ol).  
-  - [ ] Keyboard navigation fungerer (Tab gennem alle links/knapper på blog og About).  
-  - [ ] Alt-tekster for CMS-billeder er meningsfulde (test med screen reader eller tjek alt-attributter).  
-  - [ ] Lighthouse accessibility score ≥ 90 på forsiden og blog-detail.  
-- [ ] Ingen regressions i eksisterende produkt-/checkout-flows (hurtig smoke-test af vigtigste flows).  
-- [ ] Dokumentation i `.project` er opdateret og gennemlæst (ingen åbenlyse forældede referencer til Payload som aktiv løsning).  
-- [ ] CORE-26 i Linear er opdateret med kommentar/status som beskrevet.
+- [ ] Homepage-struktur er analyseret og dokumenteret (analyse-dokument opdateret).  
+- [ ] `HomeTemplate` bruges som eneste template for forsiden, og route handleren er simpel (data-fetch + render).  
+- [ ] `Page` content type med slug `homepage` eksisterer i Strapi med relevante sektioner udfyldt.  
+- [ ] Forsiden i storefront viser indhold fra Strapi (Hero, mindst én ekstra sektion) uden at ændre commerce-delen.  
+- [ ] Ændringer i Strapi (fx rækkefølge af sektioner eller tekst i Hero) kan ses i storefront uden ny deploy (via Preview-flow).  
+- [ ] Fallback til eksisterende `homepageContent` fungerer, hvis Strapi ikke svarer eller `homepage` mangler.  
+- [ ] **Performance:** Forsiden loader fortsat inden for acceptable grænser (< 2 sekunder i dev, uden unødige Strapi-kald).  
+- [ ] **Accessibility:**  
+  - [ ] CMS-drevet indhold bruger semantisk korrekt HTML (overskrifter, lister, brødtekst).  
+  - [ ] Keyboard navigation fungerer fortsat på forsiden.  
+  - [ ] Alt-tekster for CMS-billeder (hero/brand-logos/storytelling) er meningsfulde.  
+- [ ] Lighthouse accessibility score ≥ 90 på forsiden.  
+- [ ] Dokumentation for homepage-integration er komplet og opdateret.
 
-**⚠️ PAUSE HERE** – Før produktionsdeploy skal ovenstående manuelle og automatiske checks være grønne.
+**⚠️ PAUSE HERE** – Før næste fase skal homepage være fuldt integreret med Strapi via pre-built sektioner (uden eksternt Page Builder plugin) og være dokumenteret for både udviklere og marketing.
 
 ---
 

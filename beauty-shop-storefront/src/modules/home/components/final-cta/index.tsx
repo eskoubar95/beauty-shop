@@ -23,7 +23,7 @@ const FinalCtaSection = ({ content }: FinalCtaProps) => {
   return (
     <section className="bg-background-light py-16 sm:py-20 lg:py-24">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-8 px-4 text-center text-primary sm:gap-10">
-        <h2 className="text-4xl font-semibold uppercase tracking-[0.08em] sm:text-[44px] lg:text-[52px]">
+        <h2 className="font-semibold text-heading-2-cta-mobile sm:text-heading-2-cta-tablet lg:text-heading-2-cta-desktop">
           {title}
         </h2>
         <span className="h-px w-16 bg-primary/40" />

@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_homepage_story_highlights",
+  "info": {
+    "displayName": "Story Highlight",
+    "singularName": "story-highlight",
+    "pluralName": "story-highlights",
+    "description": "Single highlight item with title and description"
+  },
+  "options": {},
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "maxLength": 255,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
