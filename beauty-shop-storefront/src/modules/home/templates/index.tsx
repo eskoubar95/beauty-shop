@@ -24,8 +24,10 @@ type HomeTemplateProps = {
 function getImageUrl(
   image?: { data?: { url: string } | null; url?: string } | null
 ): string {
+  if (!image) return '';
+  
   // Try new structure first (direct url)
-  if (image?.url) {
+  if ('url' in image && image.url) {
     if (image.url.startsWith('http')) {
       return image.url;
     }

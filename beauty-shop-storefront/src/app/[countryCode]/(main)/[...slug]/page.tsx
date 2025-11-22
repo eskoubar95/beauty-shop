@@ -110,7 +110,7 @@ export default async function DynamicPage(props: Props) {
     case 'standard':
     default:
       // Standard pages use simple body content
-      return <StandardPageTemplate page={page} region={region} />
+      return <StandardPageTemplate page={page} />
   }
 }
 

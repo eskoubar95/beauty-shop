@@ -4,7 +4,7 @@
  */
 
 import { fetchFromStrapi } from "./strapi-client";
-import { getLocaleFromCountryCode } from "../utils/locale";
+import { getLocaleFromCountryCode } from "@lib/utils/locale";
 import type {
   Page,
   PageAttributes,
@@ -179,7 +179,7 @@ export async function getHomepage(locale?: string): Promise<HomepagePageAttribut
       })));
       
       // Find product section and log structure
-      const productSection = page.sections.find((s: any) => s.__component === 'homepage.product-section');
+      const productSection = page.sections.find((s: any) => s.__component === 'homepage.product-section') as any;
       if (productSection) {
         console.log('[getHomepage] Product section found:', {
           internalLabel: productSection.internalLabel,
