@@ -1,4 +1,5 @@
 const checkEnvVariables = require("./check-env-variables")
+const path = require("path")
 
 // Note: Env variable check runs at build time, not Edge runtime
 // This prevents deployment if vars missing, but won't catch runtime issues
@@ -15,6 +16,9 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  */
 const nextConfig = {
   reactStrictMode: true,
+  // Fix for Vercel build tracing with parallel routes
+  // Set root to monorepo root so Next.js can correctly trace files
+  outputFileTracingRoot: path.join(__dirname, '../'),
   logging: {
     fetches: {
       fullUrl: true,
