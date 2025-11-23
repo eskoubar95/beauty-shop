@@ -32,5 +32,8 @@ module.exports = defineConfig({
         redisUrl: process.env.REDIS_URL,
       },
     },
+    purchaseOrder: {
+      resolve: "./src/modules/purchase-orders",
+    },
   },
 })
