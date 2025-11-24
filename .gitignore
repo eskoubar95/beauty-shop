@@ -64,14 +64,19 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
+# dotenv environment variable files (all variations, in all directories)
+**/.env
+**/.env.*
+!.env.example
+!.env*.example
+!.env.template
+!.env*.template
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-.env.test
-.env.production
+.env.*
+!.env.example
+!.env*.example
+!.env.template
+!.env*.template
 
 # parcel-bundler cache
 .cache
