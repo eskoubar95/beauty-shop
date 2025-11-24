@@ -64,8 +64,8 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files (all variations, in all directories)
-# Match .env files in root and all subdirectories
+# dotenv environment variable files
+# Each monorepo has its own .env file - ignore all .env files in subdirectories
 **/.env
 **/.env.*
 # But allow .example and .template files (these are safe to commit)
@@ -73,9 +73,9 @@ typings/
 !.env*.example
 !.env.template
 !.env*.template
-# Also match in root
-.env
-.env.*
+# Explicitly ignore root .env files (monorepo root should not have .env)
+/.env
+/.env.*
 !.env.example
 !.env*.example
 !.env.template
