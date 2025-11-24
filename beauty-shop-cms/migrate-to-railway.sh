@@ -55,7 +55,8 @@ fi
 # Step 4: Test Railway connection
 echo ""
 echo -e "${YELLOW}Step 4: Testing Railway connection...${NC}"
-if psql "$RAILWAY_DB_URL" -c "SELECT version();" > /dev/null 2>&1; then
+# Use Docker postgres image to test connection (psql might not be installed locally)
+if docker run --rm postgres:16 psql "$RAILWAY_DB_URL" -c "SELECT version();" > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Connection successful${NC}"
 else
     echo -e "${RED}❌ Connection failed. Please check your DATABASE_URL${NC}"
@@ -79,7 +80,8 @@ fi
 echo ""
 echo -e "${YELLOW}Step 6: Importing to Railway...${NC}"
 echo "This may take a few minutes..."
-psql "$RAILWAY_DB_URL" < "$BACKUP_FILE"
+# Use Docker postgres image to import (psql might not be installed locally)
+docker run --rm -i -v "$(pwd):/backup" postgres:16 psql "$RAILWAY_DB_URL" < "$BACKUP_FILE"
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Import successful!${NC}"
@@ -91,16 +93,17 @@ fi
 # Step 7: Verify migration
 echo ""
 echo -e "${YELLOW}Step 7: Verifying migration...${NC}"
-TABLE_COUNT=$(psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" | xargs)
+# Use Docker postgres image to verify (psql might not be installed locally)
+TABLE_COUNT=$(docker run --rm postgres:16 psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null | xargs || echo "0")
 echo "   Tables in Railway: $TABLE_COUNT"
 
-PAGE_COUNT=$(psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM pages;" 2>/dev/null | xargs || echo "0")
+PAGE_COUNT=$(docker run --rm postgres:16 psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM pages;" 2>/dev/null | xargs || echo "0")
 echo "   Pages: $PAGE_COUNT"
 
-BLOG_COUNT=$(psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM blog_posts;" 2>/dev/null | xargs || echo "0")
+BLOG_COUNT=$(docker run --rm postgres:16 psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM blog_posts;" 2>/dev/null | xargs || echo "0")
 echo "   Blog posts: $BLOG_COUNT"
 
-ADMIN_COUNT=$(psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM admin_users;" 2>/dev/null | xargs || echo "0")
+ADMIN_COUNT=$(docker run --rm postgres:16 psql "$RAILWAY_DB_URL" -t -c "SELECT COUNT(*) FROM admin_users;" 2>/dev/null | xargs || echo "0")
 echo "   Admin users: $ADMIN_COUNT"
 
 # Step 8: Summary
