@@ -65,12 +65,15 @@ typings/
 .yarn-integrity
 
 # dotenv environment variable files (all variations, in all directories)
+# Match .env files in root and all subdirectories
 **/.env
 **/.env.*
+# But allow .example and .template files (these are safe to commit)
 !.env.example
 !.env*.example
 !.env.template
 !.env*.template
+# Also match in root
 .env
 .env.*
 !.env.example
